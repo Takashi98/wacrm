@@ -10,3 +10,4 @@
 - reduced the Inbox intro area into a slim header and converted the page into a fuller-height operator workspace
 - added the Leads pipeline shell at `/leads` with a responsive mock pipeline board and empty states
 - added the Automations shell at `/automations` with a responsive mock rules workspace and empty states
+- added the Payments shell at `/payments` with a responsive mock payment records workspace and empty states
