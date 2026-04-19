@@ -1,6 +1,7 @@
 import { Navigate, createBrowserRouter } from 'react-router-dom'
 import AppShell from '../layouts/AppShell'
 import InboxPage from '../pages/InboxPage'
+import LeadsPage from '../pages/LeadsPage'
 import NotFoundPage from '../pages/NotFoundPage'
 
 export const router = createBrowserRouter([
@@ -15,6 +16,10 @@ export const router = createBrowserRouter([
       {
         path: 'inbox',
         element: <InboxPage />,
+      },
+      {
+        path: 'leads',
+        element: <LeadsPage />,
       },
       {
         path: '*',

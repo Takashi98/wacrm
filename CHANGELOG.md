@@ -8,3 +8,4 @@
 - introduced mock inbox data and mobile lead drawer behavior without backend integration
 - refined the Inbox shell into three distinct desktop panels with a stronger chat-first hierarchy
 - reduced the Inbox intro area into a slim header and converted the page into a fuller-height operator workspace
+- added the Leads pipeline shell at `/leads` with a responsive mock pipeline board and empty states
