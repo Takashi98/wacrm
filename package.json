@@ -1,0 +1,15 @@
+{
+  "name": "wacrm",
+  "private": true,
+  "scripts": {
+    "setup": "npm install --prefix client && npm install --prefix server",
+    "client:dev": "npm --prefix client run dev",
+    "client:build": "npm --prefix client run build",
+    "client:lint": "npm --prefix client run lint",
+    "server:dev": "npm --prefix server run dev",
+    "server:start": "npm --prefix server run start",
+    "build": "npm run client:build",
+    "lint": "npm run client:lint"
+  }
+}
+
