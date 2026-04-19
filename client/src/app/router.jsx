@@ -1,6 +1,6 @@
-import { createBrowserRouter } from 'react-router-dom'
+import { Navigate, createBrowserRouter } from 'react-router-dom'
 import AppShell from '../layouts/AppShell'
-import DashboardPage from '../pages/DashboardPage'
+import InboxPage from '../pages/InboxPage'
 import NotFoundPage from '../pages/NotFoundPage'
 
 export const router = createBrowserRouter([
@@ -10,7 +10,11 @@ export const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <DashboardPage />,
+        element: <Navigate to="/inbox" replace />,
+      },
+      {
+        path: 'inbox',
+        element: <InboxPage />,
       },
       {
         path: '*',
@@ -19,4 +23,3 @@ export const router = createBrowserRouter([
     ],
   },
 ])
-

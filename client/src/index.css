@@ -1,13 +1,11 @@
 @import "tailwindcss";
 
 :root {
-  --app-bg:
-    radial-gradient(circle at top left, rgba(255, 214, 153, 0.7), transparent 34%),
-    radial-gradient(circle at bottom right, rgba(167, 243, 208, 0.55), transparent 28%),
-    #f6f1e8;
-  --panel: rgba(255, 255, 255, 0.82);
-  --panel-strong: #fffdf8;
-  --border: rgba(15, 23, 42, 0.1);
+  --app-bg: #f3f0ea;
+  --panel: rgba(255, 255, 255, 0.92);
+  --panel-strong: #fcfbf8;
+  --panel-soft: #f8f6f1;
+  --border: rgba(148, 163, 184, 0.28);
   --text: #0f172a;
   --muted: #475569;
   font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
@@ -34,6 +32,10 @@ body {
   color: var(--text);
 }
 
+#root {
+  min-height: 100vh;
+}
+
 a {
   color: inherit;
   text-decoration: none;
@@ -44,4 +46,8 @@ input,
 textarea,
 select {
   font: inherit;
+}
+
+button {
+  cursor: pointer;
 }
