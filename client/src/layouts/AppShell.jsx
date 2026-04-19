@@ -25,6 +25,7 @@ function AppShell() {
                 {[
                   { label: 'Inbox', to: '/inbox' },
                   { label: 'Leads', to: '/leads' },
+                  { label: 'Automations', to: '/automations' },
                 ].map((item) => (
                   <NavLink
                     key={item.to}
