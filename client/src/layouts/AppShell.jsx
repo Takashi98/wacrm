@@ -27,6 +27,7 @@ function AppShell() {
                   { label: 'Leads', to: '/leads' },
                   { label: 'Automations', to: '/automations' },
                   { label: 'Payments', to: '/payments' },
+                  { label: 'Analytics', to: '/analytics' },
                 ].map((item) => (
                   <NavLink
                     key={item.to}

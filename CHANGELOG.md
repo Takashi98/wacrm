@@ -11,3 +11,4 @@
 - added the Leads pipeline shell at `/leads` with a responsive mock pipeline board and empty states
 - added the Automations shell at `/automations` with a responsive mock rules workspace and empty states
 - added the Payments shell at `/payments` with a responsive mock payment records workspace and empty states
+- added the Analytics shell at `/analytics` with a responsive mock business dashboard and empty states

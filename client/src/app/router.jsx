@@ -1,5 +1,6 @@
 import { Navigate, createBrowserRouter } from 'react-router-dom'
 import AppShell from '../layouts/AppShell'
+import AnalyticsPage from '../pages/AnalyticsPage'
 import AutomationsPage from '../pages/AutomationsPage'
 import InboxPage from '../pages/InboxPage'
 import LeadsPage from '../pages/LeadsPage'
@@ -30,6 +31,10 @@ export const router = createBrowserRouter([
       {
         path: 'payments',
         element: <PaymentsPage />,
+      },
+      {
+        path: 'analytics',
+        element: <AnalyticsPage />,
       },
       {
         path: '*',
