@@ -9,7 +9,7 @@ function NotFoundPage() {
         </p>
         <h1 className="mt-3 text-3xl font-semibold text-slate-950">404</h1>
         <p className="mt-3 text-sm leading-6 text-[color:var(--muted)]">
-          This route is not part of the current WACRM inbox shell.
+          This route is not part of the current WACRM workspace.
         </p>
         <Link
           to="/inbox"
@@ -23,4 +23,3 @@ function NotFoundPage() {
 }
 
 export default NotFoundPage
-

@@ -1,4 +1,5 @@
 const express = require('express')
+const cookieParser = require('cookie-parser')
 const cors = require('cors')
 const { APP_NAME } = require('./config/constants')
 const { env } = require('./config/env')
@@ -16,6 +17,7 @@ app.use(
 )
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
+app.use(cookieParser())
 
 app.get('/', (req, res) => {
   res.status(200).json({
@@ -30,4 +32,3 @@ app.use(notFound)
 app.use(errorHandler)
 
 module.exports = app
-

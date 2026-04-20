@@ -1,6 +1,21 @@
+import { useState } from 'react'
 import { Link, NavLink, Outlet } from 'react-router-dom'
+import { useAuth } from '../features/auth/context/useAuth'
 
 function AppShell() {
+  const { logout, user, workspace } = useAuth()
+  const [isLoggingOut, setIsLoggingOut] = useState(false)
+
+  async function handleLogout() {
+    setIsLoggingOut(true)
+
+    try {
+      await logout()
+    } finally {
+      setIsLoggingOut(false)
+    }
+  }
+
   return (
     <div className="min-h-screen px-2 py-2 sm:px-3 sm:py-3 lg:px-4">
       <div className="mx-auto flex min-h-[calc(100vh-1.5rem)] max-w-[1600px] flex-col overflow-hidden rounded-[30px] border border-[color:var(--border)] bg-[color:var(--panel)] shadow-[0_24px_64px_rgba(15,23,42,0.08)]">
@@ -47,12 +62,29 @@ function AppShell() {
             </div>
 
             <div className="flex flex-wrap items-center gap-2">
-              <span className="inline-flex items-center rounded-full border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700">
-                MVP shell
-              </span>
-              <span className="inline-flex items-center rounded-full border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700">
-                Mock data only
-              </span>
+              {workspace ? (
+                <span className="inline-flex items-center rounded-full border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700">
+                  {workspace.name}
+                </span>
+              ) : null}
+              {user ? (
+                <span className="inline-flex items-center rounded-full border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700">
+                  {user.name}
+                </span>
+              ) : null}
+              {user ? (
+                <span className="inline-flex items-center rounded-full border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700">
+                  {user.email}
+                </span>
+              ) : null}
+              <button
+                type="button"
+                onClick={handleLogout}
+                disabled={isLoggingOut}
+                className="inline-flex items-center rounded-full bg-slate-950 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-400"
+              >
+                {isLoggingOut ? 'Signing out...' : 'Logout'}
+              </button>
             </div>
           </div>
         </header>

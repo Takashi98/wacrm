@@ -12,3 +12,5 @@
 - added the Automations shell at `/automations` with a responsive mock rules workspace and empty states
 - added the Payments shell at `/payments` with a responsive mock payment records workspace and empty states
 - added the Analytics shell at `/analytics` with a responsive mock business dashboard and empty states
+- added the first auth foundation with login, signup, protected routes, and modular backend auth endpoints
+- added the first workspace foundation with workspace creation on signup, user linkage, and workspace-aware auth state
