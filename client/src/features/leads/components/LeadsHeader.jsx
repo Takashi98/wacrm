@@ -1,4 +1,16 @@
-function LeadsHeader({ stats, onCreateLead, isCreateDisabled = false }) {
+function LeadsHeader({
+  stats,
+  onCreateLead,
+  isCreateDisabled = false,
+  followUpCounts = {
+    all: 0,
+    dueNow: 0,
+    overdue: 0,
+  },
+  leadViewOptions = [],
+  activeLeadView = 'pipeline',
+  onLeadViewChange,
+}) {
   const items = [
     {
       label: 'Open',
@@ -13,6 +25,12 @@ function LeadsHeader({ stats, onCreateLead, isCreateDisabled = false }) {
       value: stats.wonLeads,
     },
   ]
+  const viewCountMap = {
+    pipeline: stats.totalLeads,
+    all: followUpCounts.all,
+    due_now: followUpCounts.dueNow,
+    overdue: followUpCounts.overdue,
+  }
 
   return (
     <section className="rounded-[22px] border border-[color:var(--border)] bg-[color:var(--panel-strong)] px-4 py-3 shadow-sm sm:px-5">
@@ -27,6 +45,41 @@ function LeadsHeader({ stats, onCreateLead, isCreateDisabled = false }) {
           <p className="mt-1 text-sm text-[color:var(--muted)]">
             Workspace-scoped pipeline data from your backend
           </p>
+
+          {leadViewOptions.length ? (
+            <div className="mt-4 flex flex-wrap gap-2">
+              {leadViewOptions.map((option) => {
+                const isActive = option.id === activeLeadView
+                const count = option.id === 'pipeline' ? null : viewCountMap[option.id]
+
+                return (
+                  <button
+                    key={option.id}
+                    type="button"
+                    onClick={() => onLeadViewChange?.(option.id)}
+                    className={`inline-flex items-center gap-2 rounded-full border px-3 py-2 text-sm font-medium transition ${
+                      isActive
+                        ? 'border-slate-950 bg-slate-950 text-white'
+                        : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300'
+                    }`}
+                  >
+                    <span>{option.label}</span>
+                    {count !== null ? (
+                      <span
+                        className={`rounded-full px-2 py-0.5 text-xs ${
+                          isActive
+                            ? 'bg-white/15 text-white'
+                            : 'bg-slate-100 text-slate-600'
+                        }`}
+                      >
+                        {count || 0}
+                      </span>
+                    ) : null}
+                  </button>
+                )
+              })}
+            </div>
+          ) : null}
         </div>
 
         <div className="flex flex-col gap-3 lg:items-end">

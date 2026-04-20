@@ -5,6 +5,8 @@ const {
   LEAD_STAGES,
 } = require('./lead.constants')
 
+const FOLLOW_UP_CATEGORIES = ['all', 'due_now', 'overdue']
+
 function normalizeText(value) {
   return typeof value === 'string' ? value.trim() : ''
 }
@@ -92,8 +94,46 @@ function validateLeadId(leadId) {
   return leadId
 }
 
+function validateFollowUpCategory(category) {
+  const normalizedCategory = normalizeText(category) || 'all'
+
+  if (!FOLLOW_UP_CATEGORIES.includes(normalizedCategory)) {
+    throw createHttpError(
+      400,
+      `Follow-up category must be one of: ${FOLLOW_UP_CATEGORIES.join(', ')}`,
+    )
+  }
+
+  return normalizedCategory
+}
+
+function validateSnoozeFollowUpInput(payload = {}) {
+  const rawFollowUpDueAt =
+    typeof payload.followUpDueAt === 'string' ? payload.followUpDueAt.trim() : ''
+
+  if (!rawFollowUpDueAt) {
+    throw createHttpError(400, 'Follow-up due date is required')
+  }
+
+  const followUpDueAt = new Date(rawFollowUpDueAt)
+
+  if (Number.isNaN(followUpDueAt.getTime())) {
+    throw createHttpError(400, 'Follow-up due date must be a valid datetime')
+  }
+
+  if (followUpDueAt <= new Date()) {
+    throw createHttpError(400, 'Follow-up due date must be in the future')
+  }
+
+  return {
+    followUpDueAt,
+  }
+}
+
 module.exports = {
   validateCreateLeadInput,
+  validateFollowUpCategory,
   validateLeadId,
+  validateSnoozeFollowUpInput,
   validateUpdateLeadStageInput,
 }

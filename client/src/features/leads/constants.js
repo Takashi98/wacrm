@@ -41,6 +41,25 @@ export const LEAD_STAGE_OPTIONS = LEADS_STAGE_COLUMNS.map((column) => ({
   value: column.stage,
 }))
 
+export const LEAD_VIEW_OPTIONS = [
+  {
+    id: 'pipeline',
+    label: 'Pipeline',
+  },
+  {
+    id: 'all',
+    label: 'All due',
+  },
+  {
+    id: 'due_now',
+    label: 'Due now',
+  },
+  {
+    id: 'overdue',
+    label: 'Overdue',
+  },
+]
+
 export function buildLeadsPipelineColumns(leads) {
   return LEADS_STAGE_COLUMNS.map((column) => ({
     ...column,

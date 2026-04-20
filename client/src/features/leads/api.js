@@ -27,10 +27,33 @@ export function getLeadsRequest() {
   return request('/leads')
 }
 
+export function getLeadFollowUpsRequest(category = 'all') {
+  const searchParams = new URLSearchParams({
+    category,
+  })
+
+  return request(`/leads/followups?${searchParams.toString()}`)
+}
+
 export function createLeadRequest(payload) {
   return request('/leads', {
     method: 'POST',
     body: payload,
+  })
+}
+
+export function completeLeadFollowUpRequest(leadId) {
+  return request(`/leads/${leadId}/followup/complete`, {
+    method: 'POST',
+  })
+}
+
+export function snoozeLeadFollowUpRequest(leadId, followUpDueAt) {
+  return request(`/leads/${leadId}/followup/snooze`, {
+    method: 'POST',
+    body: {
+      followUpDueAt,
+    },
   })
 }
 

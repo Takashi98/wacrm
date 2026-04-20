@@ -25,14 +25,14 @@ Build a simple product that can:
 - `client`: React + Vite + JavaScript with Tailwind CSS and React Router
 - `client auth`: login, signup, protected routes, and cookie-based session hydration
 - `client workspace`: auth state includes the current workspace and shows it in the app shell
-- `client leads`: the Leads page now loads real workspace-scoped pipeline data, supports create + stage update interactions, and shows follow-up due state when automation sets it
+- `client leads`: the Leads page now loads real workspace-scoped pipeline data, supports create + stage update interactions, shows follow-up due state, includes simple follow-up queue tabs, and supports done/snooze follow-up actions
 - `client inbox`: the Inbox page now loads real workspace-scoped conversations, active chat detail, and create-lead flow from the sidebar
 - `client automations`: the Automations page now loads real workspace-scoped rules and supports create + active/inactive toggle interactions
 - `client payments`: the Payments page now loads real workspace-scoped payment links and supports creating links for leads
 - `server`: Express + JavaScript with versioned base API routing and environment loading
 - `server auth`: modular auth routes for signup, login, current user, and logout
 - `server workspace`: workspace creation during signup and user-to-workspace linking
-- `server leads`: modular leads routes with workspace-scoped create, list, and stage update APIs
+- `server leads`: modular leads routes with workspace-scoped create, list, follow-up queue, follow-up action, and stage update APIs
 - `server inbox`: modular inbox routes with workspace-scoped contact, conversation, message, and create-and-link lead queries
 - `server automations`: modular automation-rule routes with workspace-scoped list, create, and status update APIs
 - `server automation execution`: first real execution path for `lead_created -> mark_followup_due`, with lead follow-up updates, `lastRunAt`, and stored automation run records
@@ -93,6 +93,9 @@ Build a simple product that can:
 - Base API inbox-to-lead route: `POST http://localhost:5000/api/v1/inbox/conversations/:conversationId/lead`
 - Dev-only inbox seed route: `POST http://localhost:5000/api/v1/inbox/dev/seed`
 - Base API leads route: `http://localhost:5000/api/v1/leads`
+- Base API lead follow-up route: `http://localhost:5000/api/v1/leads/followups`
+- Lead follow-up complete route: `POST http://localhost:5000/api/v1/leads/:leadId/followup/complete`
+- Lead follow-up snooze route: `POST http://localhost:5000/api/v1/leads/:leadId/followup/snooze`
 - Base API automations route: `http://localhost:5000/api/v1/automations`
 - Base API payments route: `http://localhost:5000/api/v1/payments/links`
 - Razorpay webhook route: `POST http://localhost:5000/api/v1/payments/webhooks/razorpay`

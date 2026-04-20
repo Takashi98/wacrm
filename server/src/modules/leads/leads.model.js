@@ -52,6 +52,10 @@ const leadSchema = new Schema(
       type: Date,
       default: null,
     },
+    lastFollowUpCompletedAt: {
+      type: Date,
+      default: null,
+    },
   },
   {
     timestamps: true,

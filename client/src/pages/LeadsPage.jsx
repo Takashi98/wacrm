@@ -1,7 +1,10 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
+  completeLeadFollowUpRequest,
   createLeadRequest,
+  getLeadFollowUpsRequest,
   getLeadsRequest,
+  snoozeLeadFollowUpRequest,
   updateLeadStageRequest,
 } from '../features/leads/api'
 import CreateLeadModal from '../features/leads/components/CreateLeadModal'
@@ -9,6 +12,7 @@ import LeadCard from '../features/leads/components/LeadCard'
 import LeadsHeader from '../features/leads/components/LeadsHeader'
 import PipelineColumn from '../features/leads/components/PipelineColumn'
 import {
+  LEAD_VIEW_OPTIONS,
   LEAD_STAGE_OPTIONS,
   buildLeadsPipelineColumns,
   buildLeadsPipelineStats,
@@ -64,7 +68,42 @@ function formatFollowUpDue(dateInput) {
   }).format(value)}`
 }
 
+function getStartOfToday(now) {
+  const startOfToday = new Date(now)
+
+  startOfToday.setHours(0, 0, 0, 0)
+
+  return startOfToday
+}
+
+function getFollowUpStatus(dateInput) {
+  if (!dateInput) {
+    return ''
+  }
+
+  const value = new Date(dateInput)
+
+  if (Number.isNaN(value.getTime())) {
+    return ''
+  }
+
+  const now = new Date()
+  const startOfToday = getStartOfToday(now)
+
+  if (value < startOfToday) {
+    return 'overdue'
+  }
+
+  if (value <= now) {
+    return 'due_now'
+  }
+
+  return ''
+}
+
 function normalizeLead(lead) {
+  const followUpStatus = getFollowUpStatus(lead.followUpDueAt)
+
   return {
     id: lead.id,
     leadName: lead.name,
@@ -75,40 +114,128 @@ function normalizeLead(lead) {
     note: lead.notes || 'No notes added for this lead yet.',
     stage: lead.stage,
     tag: lead.tags?.[0] || '',
+    followUpDueAt: lead.followUpDueAt || null,
+    lastFollowUpCompletedAt: lead.lastFollowUpCompletedAt || null,
+    followUpStatus,
     followUpDueText: formatFollowUpDue(lead.followUpDueAt),
   }
 }
 
-async function fetchLeadsBoardData() {
-  const data = await getLeadsRequest()
+function isLeadVisibleInView(lead, view) {
+  if (view === 'pipeline') {
+    return true
+  }
 
-  return data.leads.map(normalizeLead)
+  if (view === 'all') {
+    return Boolean(lead.followUpDueAt)
+  }
+
+  if (view === 'due_now') {
+    return lead.followUpStatus === 'due_now'
+  }
+
+  if (view === 'overdue') {
+    return lead.followUpStatus === 'overdue'
+  }
+
+  return true
+}
+
+function sortLeadsForView(leads, view) {
+  if (view === 'pipeline') {
+    return leads
+  }
+
+  return [...leads].sort((a, b) => {
+    const aTime = a.followUpDueAt ? new Date(a.followUpDueAt).getTime() : 0
+    const bTime = b.followUpDueAt ? new Date(b.followUpDueAt).getTime() : 0
+
+    return aTime - bTime
+  })
+}
+
+function applyLeadToCurrentView(currentLeads, nextLead, activeView) {
+  const isVisible = isLeadVisibleInView(nextLead, activeView)
+
+  const nextLeads = currentLeads
+    .map((lead) => (lead.id === nextLead.id ? nextLead : lead))
+    .filter((lead) => (lead.id === nextLead.id ? isVisible : true))
+
+  return sortLeadsForView(nextLeads, activeView)
+}
+
+function applyFollowUpCountUpdate(previousCounts, previousLead, nextLead) {
+  const previousState = {
+    all: previousLead?.followUpDueAt ? 1 : 0,
+    dueNow: previousLead?.followUpStatus === 'due_now' ? 1 : 0,
+    overdue: previousLead?.followUpStatus === 'overdue' ? 1 : 0,
+  }
+  const nextState = {
+    all: nextLead?.followUpDueAt ? 1 : 0,
+    dueNow: nextLead?.followUpStatus === 'due_now' ? 1 : 0,
+    overdue: nextLead?.followUpStatus === 'overdue' ? 1 : 0,
+  }
+
+  return {
+    all: Math.max(0, previousCounts.all + nextState.all - previousState.all),
+    dueNow: Math.max(
+      0,
+      previousCounts.dueNow + nextState.dueNow - previousState.dueNow,
+    ),
+    overdue: Math.max(
+      0,
+      previousCounts.overdue + nextState.overdue - previousState.overdue,
+    ),
+  }
+}
+
+async function fetchLeadsViewData(view) {
+  if (view === 'pipeline') {
+    const [leadsData, followUpsData] = await Promise.all([
+      getLeadsRequest(),
+      getLeadFollowUpsRequest('all'),
+    ])
+
+    return {
+      leads: leadsData.leads.map(normalizeLead),
+      followUpCounts: followUpsData.counts,
+    }
+  }
+
+  const followUpsData = await getLeadFollowUpsRequest(view)
+
+  return {
+    leads: followUpsData.leads.map(normalizeLead),
+    followUpCounts: followUpsData.counts,
+  }
 }
 
 function LeadsPage() {
-  const hasLoadedLeadsRef = useRef(false)
   const [leads, setLeads] = useState([])
   const [status, setStatus] = useState('loading')
   const [errorMessage, setErrorMessage] = useState('')
   const [interactionErrorMessage, setInteractionErrorMessage] = useState('')
+  const [followUpCounts, setFollowUpCounts] = useState({
+    all: 0,
+    dueNow: 0,
+    overdue: 0,
+  })
+  const [activeLeadView, setActiveLeadView] = useState('pipeline')
   const [isCreateLeadOpen, setIsCreateLeadOpen] = useState(false)
   const [createLeadModalKey, setCreateLeadModalKey] = useState(0)
   const [isCreatingLead, setIsCreatingLead] = useState(false)
   const [createLeadErrorMessage, setCreateLeadErrorMessage] = useState('')
   const [updatingLeadId, setUpdatingLeadId] = useState('')
+  const [updatingFollowUpLeadId, setUpdatingFollowUpLeadId] = useState('')
 
   useEffect(() => {
-    if (hasLoadedLeadsRef.current) {
-      return
-    }
-
-    hasLoadedLeadsRef.current = true
-
     async function loadLeads() {
       try {
-        const nextLeads = await fetchLeadsBoardData()
+        setStatus('loading')
+        const nextData = await fetchLeadsViewData(activeLeadView)
 
-        setLeads(nextLeads)
+        setLeads(nextData.leads)
+        setFollowUpCounts(nextData.followUpCounts)
         setErrorMessage('')
         setStatus('success')
       } catch (error) {
@@ -118,15 +245,16 @@ function LeadsPage() {
     }
 
     loadLeads()
-  }, [])
+  }, [activeLeadView])
 
   const leadsPipelineColumns = buildLeadsPipelineColumns(leads)
   const leadsPipelineStats = buildLeadsPipelineStats(leads)
 
   async function refreshLeadsBoard() {
-    const nextLeads = await fetchLeadsBoardData()
+    const nextData = await fetchLeadsViewData(activeLeadView)
 
-    setLeads(nextLeads)
+    setLeads(nextData.leads)
+    setFollowUpCounts(nextData.followUpCounts)
     setInteractionErrorMessage('')
     setStatus('success')
   }
@@ -167,6 +295,54 @@ function LeadsPage() {
     }
   }
 
+  async function handleCompleteFollowUp(leadId) {
+    const currentLead = leads.find((lead) => lead.id === leadId)
+
+    if (!currentLead) {
+      return
+    }
+
+    setUpdatingFollowUpLeadId(leadId)
+
+    try {
+      const response = await completeLeadFollowUpRequest(leadId)
+      const nextLead = normalizeLead(response.lead)
+
+      setLeads((currentLeads) =>
+        applyLeadToCurrentView(currentLeads, nextLead, activeLeadView),
+      )
+      setFollowUpCounts((currentCounts) =>
+        applyFollowUpCountUpdate(currentCounts, currentLead, nextLead),
+      )
+    } finally {
+      setUpdatingFollowUpLeadId('')
+    }
+  }
+
+  async function handleSnoozeFollowUp(leadId, followUpDueAt) {
+    const currentLead = leads.find((lead) => lead.id === leadId)
+
+    if (!currentLead) {
+      return
+    }
+
+    setUpdatingFollowUpLeadId(leadId)
+
+    try {
+      const response = await snoozeLeadFollowUpRequest(leadId, followUpDueAt)
+      const nextLead = normalizeLead(response.lead)
+
+      setLeads((currentLeads) =>
+        applyLeadToCurrentView(currentLeads, nextLead, activeLeadView),
+      )
+      setFollowUpCounts((currentCounts) =>
+        applyFollowUpCountUpdate(currentCounts, currentLead, nextLead),
+      )
+    } finally {
+      setUpdatingFollowUpLeadId('')
+    }
+  }
+
   function handleOpenCreateLead() {
     setCreateLeadErrorMessage('')
     setCreateLeadModalKey((currentValue) => currentValue + 1)
@@ -178,6 +354,10 @@ function LeadsPage() {
       <div className="flex h-full min-h-0 flex-1 flex-col gap-3">
         <LeadsHeader
           stats={leadsPipelineStats}
+          followUpCounts={followUpCounts}
+          leadViewOptions={LEAD_VIEW_OPTIONS}
+          activeLeadView={activeLeadView}
+          onLeadViewChange={setActiveLeadView}
           onCreateLead={handleOpenCreateLead}
           isCreateDisabled={status === 'loading' || isCreatingLead}
         />
@@ -231,6 +411,9 @@ function LeadsPage() {
                           stageOptions={LEAD_STAGE_OPTIONS}
                           onStageChange={handleStageChange}
                           isUpdatingStage={updatingLeadId === lead.id}
+                          onCompleteFollowUp={handleCompleteFollowUp}
+                          onSnoozeFollowUp={handleSnoozeFollowUp}
+                          isUpdatingFollowUp={updatingFollowUpLeadId === lead.id}
                         />
                       )}
                     />
@@ -251,6 +434,9 @@ function LeadsPage() {
                         stageOptions={LEAD_STAGE_OPTIONS}
                         onStageChange={handleStageChange}
                         isUpdatingStage={updatingLeadId === lead.id}
+                        onCompleteFollowUp={handleCompleteFollowUp}
+                        onSnoozeFollowUp={handleSnoozeFollowUp}
+                        isUpdatingFollowUp={updatingFollowUpLeadId === lead.id}
                       />
                     )}
                   />
