@@ -1,5 +1,41 @@
 import { useState } from 'react'
 
+const QUICK_SNOOZE_PRESETS = [
+  {
+    label: '+1 hour',
+    buildFollowUpDueAt: () => {
+      const value = new Date()
+
+      value.setHours(value.getHours() + 1)
+      value.setSeconds(0, 0)
+
+      return value.toISOString()
+    },
+  },
+  {
+    label: 'Tomorrow 10:00 AM',
+    buildFollowUpDueAt: () => {
+      const value = new Date()
+
+      value.setDate(value.getDate() + 1)
+      value.setHours(10, 0, 0, 0)
+
+      return value.toISOString()
+    },
+  },
+  {
+    label: 'Next week',
+    buildFollowUpDueAt: () => {
+      const value = new Date()
+
+      value.setDate(value.getDate() + 7)
+      value.setSeconds(0, 0)
+
+      return value.toISOString()
+    },
+  },
+]
+
 function formatDateTimeLocalValue(dateInput) {
   if (!dateInput) {
     return ''
@@ -109,6 +145,21 @@ function LeadCard({
     }
   }
 
+  async function handlePresetSnooze(buildFollowUpDueAt) {
+    if (!onSnoozeFollowUp) {
+      return
+    }
+
+    setFollowUpErrorMessage('')
+
+    try {
+      await onSnoozeFollowUp(lead.id, buildFollowUpDueAt())
+      setIsSnoozeOpen(false)
+    } catch (error) {
+      setFollowUpErrorMessage(error.message)
+    }
+  }
+
   return (
     <article
       className={`rounded-[22px] border bg-white p-4 shadow-sm ${cardToneClasses}`}
@@ -176,6 +227,25 @@ function LeadCard({
             >
               Snooze
             </button>
+          </div>
+
+          <div className="mt-3">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">
+              Quick snooze
+            </p>
+            <div className="mt-2 flex flex-wrap gap-2">
+              {QUICK_SNOOZE_PRESETS.map((preset) => (
+                <button
+                  key={preset.label}
+                  type="button"
+                  onClick={() => handlePresetSnooze(preset.buildFollowUpDueAt)}
+                  disabled={isUpdatingFollowUp}
+                  className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 transition hover:border-slate-300 disabled:cursor-not-allowed disabled:bg-slate-100"
+                >
+                  {preset.label}
+                </button>
+              ))}
+            </div>
           </div>
 
           {isSnoozeOpen ? (

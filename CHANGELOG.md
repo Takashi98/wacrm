@@ -1,3 +1,7 @@
+## 2026-04-21
+
+- added quick follow-up snooze preset actions on lead cards for `+1 hour`, `Tomorrow 10:00 AM`, and `Next week` using the existing snooze flow
+
 ## 2026-04-20
 
 - added a root-level project script entrypoint and repo `.gitignore`
