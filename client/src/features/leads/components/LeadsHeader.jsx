@@ -25,7 +25,7 @@ function LeadsHeader({ stats }) {
             Pipeline workspace
           </h1>
           <p className="mt-1 text-sm text-[color:var(--muted)]">
-            Mock leads board shell only
+            Workspace-scoped pipeline data from your backend
           </p>
         </div>
 
@@ -50,4 +50,3 @@ function LeadsHeader({ stats }) {
 }
 
 export default LeadsHeader
-

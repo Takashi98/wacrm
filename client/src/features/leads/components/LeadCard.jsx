@@ -10,9 +10,11 @@ function LeadCard({ lead }) {
             {lead.businessName}
           </p>
         </div>
-        <span className="rounded-full bg-emerald-50 px-2.5 py-1 text-[11px] font-medium text-emerald-800">
-          {lead.tag}
-        </span>
+        {lead.tag ? (
+          <span className="rounded-full bg-emerald-50 px-2.5 py-1 text-[11px] font-medium text-emerald-800">
+            {lead.tag}
+          </span>
+        ) : null}
       </div>
 
       <dl className="mt-4 space-y-2 text-sm">
@@ -40,4 +42,3 @@ function LeadCard({ lead }) {
 }
 
 export default LeadCard
-

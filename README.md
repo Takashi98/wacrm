@@ -25,9 +25,11 @@ Build a simple product that can:
 - `client`: React + Vite + JavaScript with Tailwind CSS and React Router
 - `client auth`: login, signup, protected routes, and cookie-based session hydration
 - `client workspace`: auth state includes the current workspace and shows it in the app shell
+- `client leads`: the Leads page now loads real workspace-scoped pipeline data from the backend
 - `server`: Express + JavaScript with versioned base API routing and environment loading
 - `server auth`: modular auth routes for signup, login, current user, and logout
 - `server workspace`: workspace creation during signup and user-to-workspace linking
+- `server leads`: modular leads routes with workspace-scoped create, list, and stage update APIs
 - `root`: convenience scripts for install, client build, client lint, and server start/dev
 
 ## Repo structure
@@ -74,6 +76,7 @@ Build a simple product that can:
 - Backend root: `http://localhost:5000`
 - Base API health route: `http://localhost:5000/api/v1/health`
 - Base API auth route: `http://localhost:5000/api/v1/auth/me`
+- Base API leads route: `http://localhost:5000/api/v1/leads`
 
 ## Tech stack
 - Frontend: React + Vite + Tailwind CSS
