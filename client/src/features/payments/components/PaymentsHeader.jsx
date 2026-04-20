@@ -25,7 +25,7 @@ function PaymentsHeader({ stats }) {
             Payment links workspace
           </h1>
           <p className="mt-1 text-sm text-[color:var(--muted)]">
-            Mock payments shell only
+            Workspace-scoped payment link records from your backend
           </p>
         </div>
 
@@ -50,4 +50,3 @@ function PaymentsHeader({ stats }) {
 }
 
 export default PaymentsHeader
-

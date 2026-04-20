@@ -21,6 +21,8 @@ function LeadSidebar({
   errorMessage = '',
   onCreateLead,
   isCreateLeadDisabled = false,
+  onCreatePaymentLink,
+  isCreatePaymentLinkDisabled = false,
 }) {
   if (status === 'loading' && !conversation) {
     return (
@@ -312,6 +314,49 @@ function LeadSidebar({
               </div>
             ) : (
               <EmptyInline text="No tags added yet. This space is ready for lead labels in a later task." />
+            )}
+          </Section>
+
+          <Section title="Payment link">
+            {lead.hasPaymentLink ? (
+              <div className="space-y-3 text-sm">
+                <div className="flex items-start justify-between gap-4">
+                  <span className="text-slate-500">Status</span>
+                  <span className="font-medium text-slate-900">
+                    {lead.paymentStatus}
+                  </span>
+                </div>
+                <div className="flex items-start justify-between gap-4">
+                  <span className="text-slate-500">Amount</span>
+                  <span className="font-medium text-slate-900">
+                    {lead.paymentAmount}
+                  </span>
+                </div>
+                <div className="flex items-start justify-between gap-4">
+                  <span className="text-slate-500">Updated</span>
+                  <span className="text-right font-medium text-slate-900">
+                    {lead.paymentUpdatedAt}
+                  </span>
+                </div>
+                <div className="rounded-2xl bg-[color:var(--panel-soft)] px-4 py-4 text-sm text-slate-700">
+                  {lead.paymentLinkUrl}
+                </div>
+              </div>
+            ) : (
+              <>
+                <p className="text-sm leading-6 text-[color:var(--muted)]">
+                  No payment link has been created for this lead yet. Create one
+                  from the inbox to keep the sales flow moving.
+                </p>
+                <button
+                  type="button"
+                  onClick={onCreatePaymentLink}
+                  disabled={isCreatePaymentLinkDisabled}
+                  className="mt-4 inline-flex w-full items-center justify-center rounded-full bg-slate-950 px-5 py-3 text-sm font-medium text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-300"
+                >
+                  Create payment link
+                </button>
+              </>
             )}
           </Section>
 

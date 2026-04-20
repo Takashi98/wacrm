@@ -1,4 +1,9 @@
-function PaymentsSidebar({ insights }) {
+function PaymentsSidebar({
+  insights,
+  onCreatePaymentLink,
+  isCreateDisabled = false,
+  hasLeads = true,
+}) {
   return (
     <>
       <section className="rounded-[24px] border border-[color:var(--border)] bg-white p-5 shadow-sm">
@@ -14,10 +19,18 @@ function PaymentsSidebar({ insights }) {
         </p>
         <button
           type="button"
+          onClick={onCreatePaymentLink}
+          disabled={isCreateDisabled}
           className="mt-5 inline-flex items-center justify-center rounded-full bg-slate-950 px-4 py-3 text-sm font-medium text-white transition hover:bg-slate-800"
         >
           Create payment link
         </button>
+        {!hasLeads ? (
+          <p className="mt-3 text-sm leading-6 text-[color:var(--muted)]">
+            Create a lead first so a payment link can be attached to real lead
+            context.
+          </p>
+        ) : null}
       </section>
 
       <section className="rounded-[24px] border border-[color:var(--border)] bg-[color:var(--panel-strong)] p-5 shadow-sm">
@@ -60,4 +73,3 @@ function PaymentsSidebar({ insights }) {
 }
 
 export default PaymentsSidebar
-

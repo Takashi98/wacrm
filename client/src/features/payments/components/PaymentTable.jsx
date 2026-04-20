@@ -51,9 +51,8 @@ function PaymentTable({ records }) {
               No payment links yet
             </p>
             <p className="mt-2 text-sm leading-6 text-[color:var(--muted)]">
-              Payment requests will appear here once the payment flow is
-              connected. Keep the first version focused on clear statuses and
-              simple follow-up context.
+              Payment links created for workspace leads will appear here with
+              simple statuses and follow-up context.
             </p>
           </div>
         </div>
@@ -63,4 +62,3 @@ function PaymentTable({ records }) {
 }
 
 export default PaymentTable
-

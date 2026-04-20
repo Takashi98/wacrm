@@ -2,6 +2,7 @@ const { createHttpError } = require('../../utils/http-error')
 const { env } = require('../../config/env')
 const { serializeLead } = require('../leads/leads.service')
 const Lead = require('../leads/leads.model')
+const { findLatestPaymentLinkForLead } = require('../payments/payments.service')
 const Contact = require('./contact.model')
 const Conversation = require('./conversation.model')
 const Message = require('./message.model')
@@ -50,7 +51,7 @@ function buildConversationSummary(conversation) {
   }
 }
 
-function buildConversationDetail(conversation, messages) {
+function buildConversationDetail(conversation, messages, latestPaymentLink) {
   const contact = conversation.contactId
   const lead = conversation.leadId
 
@@ -60,6 +61,7 @@ function buildConversationDetail(conversation, messages) {
     hasLinkedLead: Boolean(lead),
     contact: contact ? serializeContact(contact) : null,
     lead: lead ? serializeLead(lead) : null,
+    latestPaymentLink,
     lastMessageAt: conversation.lastMessageAt,
     preview: conversation.lastMessagePreview,
     replyState: conversation.replyState,
@@ -126,8 +128,14 @@ async function getConversationDetail({ conversationId, workspaceId }) {
   }).sort({
     createdAt: 1,
   })
+  const latestPaymentLink = conversation.leadId
+    ? await findLatestPaymentLinkForLead({
+        workspaceId,
+        leadId: conversation.leadId._id || conversation.leadId,
+      })
+    : null
 
-  return buildConversationDetail(conversation, messages)
+  return buildConversationDetail(conversation, messages, latestPaymentLink)
 }
 
 async function createLeadFromConversation({ conversationId, workspaceId, input }) {

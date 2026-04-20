@@ -27,11 +27,13 @@ Build a simple product that can:
 - `client workspace`: auth state includes the current workspace and shows it in the app shell
 - `client leads`: the Leads page now loads real workspace-scoped pipeline data and supports create + stage update interactions
 - `client inbox`: the Inbox page now loads real workspace-scoped conversations, active chat detail, and create-lead flow from the sidebar
+- `client payments`: the Payments page now loads real workspace-scoped payment links and supports creating links for leads
 - `server`: Express + JavaScript with versioned base API routing and environment loading
 - `server auth`: modular auth routes for signup, login, current user, and logout
 - `server workspace`: workspace creation during signup and user-to-workspace linking
 - `server leads`: modular leads routes with workspace-scoped create, list, and stage update APIs
 - `server inbox`: modular inbox routes with workspace-scoped contact, conversation, message, and create-and-link lead queries
+- `server payments`: modular payment-link routes with workspace-scoped create and list APIs
 - `server dev seed`: authenticated development-only inbox seed route for local end-to-end testing
 - `root`: convenience scripts for install, client build, client lint, and server start/dev
 
@@ -83,6 +85,7 @@ Build a simple product that can:
 - Base API inbox-to-lead route: `POST http://localhost:5000/api/v1/inbox/conversations/:conversationId/lead`
 - Dev-only inbox seed route: `POST http://localhost:5000/api/v1/inbox/dev/seed`
 - Base API leads route: `http://localhost:5000/api/v1/leads`
+- Base API payments route: `http://localhost:5000/api/v1/payments/links`
 
 ## Local inbox testing
 1. Start the backend in development mode with `npm run server:dev`

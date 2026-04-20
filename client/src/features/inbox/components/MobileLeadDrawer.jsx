@@ -6,6 +6,8 @@ function MobileLeadDrawer({
   errorMessage,
   onCreateLead,
   isCreateLeadDisabled,
+  onCreatePaymentLink,
+  isCreatePaymentLinkDisabled,
   open,
   onClose,
 }) {
@@ -47,6 +49,8 @@ function MobileLeadDrawer({
           errorMessage={errorMessage}
           onCreateLead={onCreateLead}
           isCreateLeadDisabled={isCreateLeadDisabled}
+          onCreatePaymentLink={onCreatePaymentLink}
+          isCreatePaymentLinkDisabled={isCreatePaymentLinkDisabled}
         />
       </div>
     </div>

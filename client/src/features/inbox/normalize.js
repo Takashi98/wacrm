@@ -147,6 +147,7 @@ export function normalizeConversationSummary(conversation) {
 export function normalizeConversationDetail(conversation) {
   const contact = conversation.contact || {}
   const lead = conversation.lead
+  const paymentLink = conversation.latestPaymentLink || null
   const businessName =
     contact.businessName || lead?.businessName || 'Business name pending'
   const contactName = contact.name || lead?.name || 'Unknown contact'
@@ -194,6 +195,7 @@ export function normalizeConversationDetail(conversation) {
       time: formatDetailedTime(message.createdAt),
     })),
     lead: {
+      id: lead?.id || '',
       contactName,
       businessName,
       phone: contact.phone || 'Not added',
@@ -202,7 +204,13 @@ export function normalizeConversationDetail(conversation) {
       owner: conversation.assigneeName || 'Unassigned',
       source: lead?.source || contact.source || 'Not set',
       city: contact.city || 'Not set',
-      paymentStatus: 'Not started',
+      hasPaymentLink: Boolean(paymentLink),
+      paymentStatus: paymentLink?.status || 'Not started',
+      paymentAmount: paymentLink ? formatCurrency(paymentLink.amount) : 'Not created',
+      paymentLinkUrl: paymentLink?.linkUrl || '',
+      paymentUpdatedAt: paymentLink
+        ? formatLastActivity(paymentLink.updatedAt || paymentLink.createdAt)
+        : 'Not created',
       estimatedValue: lead ? formatCurrency(lead.value) : 'TBD',
       tags: lead?.tags || [],
       notes,

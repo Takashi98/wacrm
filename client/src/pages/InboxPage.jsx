@@ -10,6 +10,8 @@ import InboxHeader from '../features/inbox/components/InboxHeader'
 import LeadSidebar from '../features/inbox/components/LeadSidebar'
 import MobileLeadDrawer from '../features/inbox/components/MobileLeadDrawer'
 import CreateLeadModal from '../features/leads/components/CreateLeadModal'
+import CreatePaymentLinkModal from '../features/payments/components/CreatePaymentLinkModal'
+import { createPaymentLinkRequest } from '../features/payments/api'
 import {
   buildInboxStats,
   normalizeConversationDetail,
@@ -53,6 +55,27 @@ function buildCreateLeadInitialValues(conversation) {
   }
 }
 
+function buildCreatePaymentLinkInitialValues(conversation) {
+  if (!conversation?.hasLinkedLead) {
+    return {
+      leadId: '',
+      amount: '',
+      note: '',
+    }
+  }
+
+  return {
+    leadId: conversation.lead.id,
+    amount:
+      conversation.lead.estimatedValue !== 'TBD'
+        ? String(conversation.lead.estimatedValue.replace('Rs ', '').replaceAll(',', ''))
+        : '',
+    note: conversation.preview
+      ? `Payment follow-up from inbox: ${conversation.preview}`
+      : '',
+  }
+}
+
 function InboxPage() {
   const hasLoadedInboxRef = useRef(false)
   const [conversations, setConversations] = useState([])
@@ -69,6 +92,11 @@ function InboxPage() {
   const [createLeadModalKey, setCreateLeadModalKey] = useState(0)
   const [isCreatingLead, setIsCreatingLead] = useState(false)
   const [createLeadErrorMessage, setCreateLeadErrorMessage] = useState('')
+  const [isCreatePaymentLinkOpen, setIsCreatePaymentLinkOpen] = useState(false)
+  const [createPaymentLinkModalKey, setCreatePaymentLinkModalKey] = useState(0)
+  const [isCreatingPaymentLink, setIsCreatingPaymentLink] = useState(false)
+  const [createPaymentLinkErrorMessage, setCreatePaymentLinkErrorMessage] =
+    useState('')
 
   useEffect(() => {
     if (hasLoadedInboxRef.current) {
@@ -138,8 +166,10 @@ function InboxPage() {
     setActiveConversationStatus('loading')
     setActiveConversationErrorMessage('')
     setCreateLeadErrorMessage('')
+    setCreatePaymentLinkErrorMessage('')
     setInteractionErrorMessage('')
     setIsCreateLeadOpen(false)
+    setIsCreatePaymentLinkOpen(false)
     setActiveConversationId(conversationId)
     setIsLeadDrawerOpen(false)
   }
@@ -149,8 +179,10 @@ function InboxPage() {
     setActiveConversationStatus('idle')
     setActiveConversationErrorMessage('')
     setCreateLeadErrorMessage('')
+    setCreatePaymentLinkErrorMessage('')
     setInteractionErrorMessage('')
     setIsCreateLeadOpen(false)
+    setIsCreatePaymentLinkOpen(false)
     setActiveConversationId(null)
     setIsLeadDrawerOpen(false)
   }
@@ -164,6 +196,17 @@ function InboxPage() {
     setInteractionErrorMessage('')
     setCreateLeadModalKey((currentValue) => currentValue + 1)
     setIsCreateLeadOpen(true)
+  }
+
+  function handleOpenCreatePaymentLink() {
+    if (!activeConversation?.hasLinkedLead) {
+      return
+    }
+
+    setCreatePaymentLinkErrorMessage('')
+    setInteractionErrorMessage('')
+    setCreatePaymentLinkModalKey((currentValue) => currentValue + 1)
+    setIsCreatePaymentLinkOpen(true)
   }
 
   async function handleCreateLead(payload) {
@@ -200,6 +243,39 @@ function InboxPage() {
       setCreateLeadErrorMessage(error.message)
     } finally {
       setIsCreatingLead(false)
+    }
+  }
+
+  async function handleCreatePaymentLink(payload) {
+    if (!activeConversation?.hasLinkedLead) {
+      return
+    }
+
+    setCreatePaymentLinkErrorMessage('')
+    setInteractionErrorMessage('')
+    setIsCreatingPaymentLink(true)
+
+    try {
+      await createPaymentLinkRequest(payload)
+      setIsCreatePaymentLinkOpen(false)
+
+      try {
+        const nextConversation = await fetchInboxConversationDetail(
+          activeConversationId,
+        )
+
+        setActiveConversation(nextConversation)
+        setActiveConversationStatus('ready')
+        setActiveConversationErrorMessage('')
+      } catch {
+        setInteractionErrorMessage(
+          'Payment link was created, but the inbox detail could not be refreshed automatically. Refresh the page once.',
+        )
+      }
+    } catch (error) {
+      setCreatePaymentLinkErrorMessage(error.message)
+    } finally {
+      setIsCreatingPaymentLink(false)
     }
   }
 
@@ -277,6 +353,8 @@ function InboxPage() {
                     errorMessage={activeConversationErrorMessage}
                     onCreateLead={handleOpenCreateLead}
                     isCreateLeadDisabled={isCreatingLead}
+                    onCreatePaymentLink={handleOpenCreatePaymentLink}
+                    isCreatePaymentLinkDisabled={isCreatingPaymentLink}
                   />
                 </aside>
               </div>
@@ -318,6 +396,8 @@ function InboxPage() {
         errorMessage={activeConversationErrorMessage}
         onCreateLead={handleOpenCreateLead}
         isCreateLeadDisabled={isCreatingLead}
+        onCreatePaymentLink={handleOpenCreatePaymentLink}
+        isCreatePaymentLinkDisabled={isCreatingPaymentLink}
         open={Boolean(activeConversation) && isLeadDrawerOpen}
         onClose={() => setIsLeadDrawerOpen(false)}
       />
@@ -331,6 +411,39 @@ function InboxPage() {
         errorMessage={createLeadErrorMessage}
         initialValues={buildCreateLeadInitialValues(activeConversation)}
         description="Convert this conversation into a pipeline lead without leaving the inbox."
+      />
+
+      <CreatePaymentLinkModal
+        key={createPaymentLinkModalKey}
+        open={isCreatePaymentLinkOpen}
+        onClose={() => setIsCreatePaymentLinkOpen(false)}
+        onSubmit={handleCreatePaymentLink}
+        isSubmitting={isCreatingPaymentLink}
+        errorMessage={createPaymentLinkErrorMessage}
+        leadOptions={
+          activeConversation?.hasLinkedLead
+            ? [
+                {
+                  value: activeConversation.lead.id,
+                  label: activeConversation.lead.businessName
+                    ? `${activeConversation.lead.contactName} - ${activeConversation.lead.businessName}`
+                    : activeConversation.lead.contactName,
+                  source: activeConversation.lead.source,
+                  defaultAmount:
+                    activeConversation.lead.estimatedValue !== 'TBD'
+                      ? Number(
+                          activeConversation.lead.estimatedValue
+                            .replace('Rs ', '')
+                            .replaceAll(',', ''),
+                        )
+                      : 0,
+                },
+              ]
+            : []
+        }
+        initialValues={buildCreatePaymentLinkInitialValues(activeConversation)}
+        description="Create a payment link directly from this lead context without leaving the inbox."
+        isLeadLocked
       />
     </>
   )
