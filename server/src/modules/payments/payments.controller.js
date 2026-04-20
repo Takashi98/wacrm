@@ -1,5 +1,6 @@
 const {
   createPaymentLink,
+  handleRazorpayWebhook,
   listPaymentLinks,
 } = require('./payments.service')
 const { validateCreatePaymentLinkInput } = require('./payments.validation')
@@ -34,7 +35,22 @@ async function createPaymentLinkHandler(req, res, next) {
   }
 }
 
+async function handleRazorpayWebhookHandler(req, res, next) {
+  try {
+    const result = await handleRazorpayWebhook({
+      rawBody: Buffer.isBuffer(req.body) ? req.body : Buffer.from(''),
+      signature: req.get('X-Razorpay-Signature') || '',
+      eventId: req.get('x-razorpay-event-id') || '',
+    })
+
+    res.status(200).json(result)
+  } catch (error) {
+    next(error)
+  }
+}
+
 module.exports = {
   createPaymentLinkHandler,
+  handleRazorpayWebhookHandler,
   listPaymentLinksHandler,
 }

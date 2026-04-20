@@ -27,12 +27,14 @@ Build a simple product that can:
 - `client workspace`: auth state includes the current workspace and shows it in the app shell
 - `client leads`: the Leads page now loads real workspace-scoped pipeline data and supports create + stage update interactions
 - `client inbox`: the Inbox page now loads real workspace-scoped conversations, active chat detail, and create-lead flow from the sidebar
+- `client automations`: the Automations page now loads real workspace-scoped rules and supports create + active/inactive toggle interactions
 - `client payments`: the Payments page now loads real workspace-scoped payment links and supports creating links for leads
 - `server`: Express + JavaScript with versioned base API routing and environment loading
 - `server auth`: modular auth routes for signup, login, current user, and logout
 - `server workspace`: workspace creation during signup and user-to-workspace linking
 - `server leads`: modular leads routes with workspace-scoped create, list, and stage update APIs
 - `server inbox`: modular inbox routes with workspace-scoped contact, conversation, message, and create-and-link lead queries
+- `server automations`: modular automation-rule routes with workspace-scoped list, create, and status update APIs
 - `server payments`: modular payment-link routes with workspace-scoped create and list APIs
 - `server razorpay`: real Razorpay payment-link creation with stored provider ids, urls, and statuses
 - `server dev seed`: authenticated development-only inbox seed route for local end-to-end testing
@@ -67,6 +69,7 @@ Build a simple product that can:
    - add Razorpay server credentials:
      - `RAZORPAY_KEY_ID`
      - `RAZORPAY_KEY_SECRET`
+     - `RAZORPAY_WEBHOOK_SECRET`
 3. Start the frontend with `npm run client:dev`
 4. Start the backend with `npm run server:dev`
 
@@ -89,13 +92,22 @@ Build a simple product that can:
 - Base API inbox-to-lead route: `POST http://localhost:5000/api/v1/inbox/conversations/:conversationId/lead`
 - Dev-only inbox seed route: `POST http://localhost:5000/api/v1/inbox/dev/seed`
 - Base API leads route: `http://localhost:5000/api/v1/leads`
+- Base API automations route: `http://localhost:5000/api/v1/automations`
 - Base API payments route: `http://localhost:5000/api/v1/payments/links`
+- Razorpay webhook route: `POST http://localhost:5000/api/v1/payments/webhooks/razorpay`
 
 ## Local inbox testing
 1. Start the backend in development mode with `npm run server:dev`
 2. Sign up or log in so the auth cookie is set for your current workspace
 3. Trigger `POST /api/v1/inbox/dev/seed`
 4. Open `/inbox` to verify the seeded conversation, timeline, and right sidebar context
+
+## Razorpay webhook testing
+1. Set `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`, and `RAZORPAY_WEBHOOK_SECRET` in `server/.env`
+2. In the Razorpay dashboard, create a webhook for `POST /api/v1/payments/webhooks/razorpay`
+3. Subscribe the webhook to `payment_link.paid`, `payment_link.partially_paid`, `payment_link.expired`, and `payment_link.cancelled`
+4. Use the same webhook secret in Razorpay and `server/.env`
+5. Refresh `/payments` or the inbox lead sidebar after Razorpay delivers an event to see the stored status update
 
 ## Tech stack
 - Frontend: React + Vite + Tailwind CSS

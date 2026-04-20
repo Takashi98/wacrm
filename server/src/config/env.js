@@ -37,6 +37,7 @@ const env = {
   ),
   RAZORPAY_KEY_ID: process.env.RAZORPAY_KEY_ID || '',
   RAZORPAY_KEY_SECRET: process.env.RAZORPAY_KEY_SECRET || '',
+  RAZORPAY_WEBHOOK_SECRET: process.env.RAZORPAY_WEBHOOK_SECRET || '',
   RAZORPAY_API_BASE_URL:
     process.env.RAZORPAY_API_BASE_URL || 'https://api.razorpay.com/v1',
 }

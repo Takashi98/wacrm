@@ -21,3 +21,5 @@
 - added the inbox-to-lead flow to create and link a new lead from an active conversation
 - added the payment-link foundation with workspace-scoped APIs, stored payment records, and real Payments page data
 - integrated real Razorpay payment-link creation and stored provider ids, urls, and statuses
+- added Razorpay webhook signature verification and payment-link status sync into stored payment records
+- added the automations foundation with workspace-scoped APIs and real Automations page create and active/inactive toggle flows

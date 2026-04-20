@@ -37,6 +37,16 @@ const paymentLinkSchema = new Schema(
       trim: true,
       default: '',
     },
+    lastWebhookEventId: {
+      type: String,
+      trim: true,
+      default: '',
+    },
+    lastWebhookEventName: {
+      type: String,
+      trim: true,
+      default: '',
+    },
     amount: {
       type: Number,
       min: 0,

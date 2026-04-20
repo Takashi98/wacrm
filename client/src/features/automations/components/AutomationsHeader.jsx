@@ -25,7 +25,7 @@ function AutomationsHeader({ stats }) {
             Operations workspace
           </h1>
           <p className="mt-1 text-sm text-[color:var(--muted)]">
-            Mock automation shell only
+            Simple workspace rules for follow-ups and owner alerts.
           </p>
         </div>
 
@@ -50,4 +50,3 @@ function AutomationsHeader({ stats }) {
 }
 
 export default AutomationsHeader
-

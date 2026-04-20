@@ -1,6 +1,10 @@
 import AutomationRow from './AutomationRow'
 
-function AutomationTable({ rules }) {
+function AutomationTable({
+  rules,
+  onToggleStatus,
+  updatingAutomationId = '',
+}) {
   return (
     <section className="flex h-full min-h-0 flex-col bg-[color:var(--panel-strong)]">
       <div className="border-b border-[color:var(--border)] bg-white px-4 py-4 sm:px-5">
@@ -10,10 +14,10 @@ function AutomationTable({ rules }) {
               Rules
             </p>
             <p className="mt-2 text-base font-semibold text-slate-950">
-              Active automation list
+              Live automation rules
             </p>
             <p className="mt-1 text-sm text-[color:var(--muted)]">
-              Simple rule summaries that operators can scan quickly.
+              Review simple workflow rules and pause or activate them as needed.
             </p>
           </div>
           <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-600">
@@ -34,13 +38,24 @@ function AutomationTable({ rules }) {
 
           <div className="hidden min-h-0 flex-1 overflow-y-auto xl:block">
             {rules.map((rule) => (
-              <AutomationRow key={rule.id} rule={rule} />
+              <AutomationRow
+                key={rule.id}
+                rule={rule}
+                onToggleStatus={onToggleStatus}
+                isUpdatingStatus={updatingAutomationId === rule.id}
+              />
             ))}
           </div>
 
           <div className="space-y-3 bg-[color:var(--panel-soft)] p-3 xl:hidden">
             {rules.map((rule) => (
-              <AutomationRow key={rule.id} rule={rule} mobile />
+              <AutomationRow
+                key={rule.id}
+                rule={rule}
+                mobile
+                onToggleStatus={onToggleStatus}
+                isUpdatingStatus={updatingAutomationId === rule.id}
+              />
             ))}
           </div>
         </>
@@ -51,8 +66,8 @@ function AutomationTable({ rules }) {
               No automation rules yet
             </p>
             <p className="mt-2 text-sm leading-6 text-[color:var(--muted)]">
-              Create your first simple follow-up or owner notification flow when
-              the automation setup is ready.
+              Create your first simple follow-up or owner notification rule for
+              this workspace.
             </p>
           </div>
         </div>
@@ -62,4 +77,3 @@ function AutomationTable({ rules }) {
 }
 
 export default AutomationTable
-

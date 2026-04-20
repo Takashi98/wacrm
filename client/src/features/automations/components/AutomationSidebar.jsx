@@ -1,4 +1,8 @@
-function AutomationSidebar({ templates }) {
+function AutomationSidebar({
+  templates,
+  onCreateAutomation,
+  isCreateDisabled = false,
+}) {
   return (
     <>
       <section className="rounded-[24px] border border-[color:var(--border)] bg-white p-5 shadow-sm">
@@ -13,6 +17,8 @@ function AutomationSidebar({ templates }) {
         </p>
         <button
           type="button"
+          onClick={onCreateAutomation}
+          disabled={isCreateDisabled}
           className="mt-5 inline-flex items-center justify-center rounded-full bg-slate-950 px-4 py-3 text-sm font-medium text-white transition hover:bg-slate-800"
         >
           Create automation
@@ -59,4 +65,3 @@ function AutomationSidebar({ templates }) {
 }
 
 export default AutomationSidebar
-

@@ -3,7 +3,16 @@ const statusClasses = {
   inactive: 'border-slate-200 bg-slate-100 text-slate-700',
 }
 
-function AutomationRow({ rule, mobile = false }) {
+function AutomationRow({
+  rule,
+  mobile = false,
+  onToggleStatus,
+  isUpdatingStatus = false,
+}) {
+  const nextStatus = rule.status === 'active' ? 'inactive' : 'active'
+  const toggleLabel =
+    rule.status === 'active' ? 'Pause rule' : 'Activate rule'
+
   if (mobile) {
     return (
       <article className="rounded-[22px] border border-slate-200 bg-white p-4 shadow-sm">
@@ -41,6 +50,15 @@ function AutomationRow({ rule, mobile = false }) {
         <p className="mt-4 text-xs font-medium uppercase tracking-[0.16em] text-slate-400">
           {rule.lastEvent}
         </p>
+
+        <button
+          type="button"
+          onClick={() => onToggleStatus(rule.id, nextStatus)}
+          disabled={isUpdatingStatus}
+          className="mt-4 inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-slate-300 disabled:cursor-not-allowed disabled:bg-slate-100"
+        >
+          {isUpdatingStatus ? 'Saving...' : toggleLabel}
+        </button>
       </article>
     )
   }
@@ -60,6 +78,14 @@ function AutomationRow({ rule, mobile = false }) {
         >
           {rule.status}
         </span>
+        <button
+          type="button"
+          onClick={() => onToggleStatus(rule.id, nextStatus)}
+          disabled={isUpdatingStatus}
+          className="mt-3 inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-700 transition hover:border-slate-300 disabled:cursor-not-allowed disabled:bg-slate-100"
+        >
+          {isUpdatingStatus ? 'Saving...' : toggleLabel}
+        </button>
       </div>
 
       <div>
@@ -78,4 +104,3 @@ function AutomationRow({ rule, mobile = false }) {
 }
 
 export default AutomationRow
-

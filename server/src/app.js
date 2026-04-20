@@ -15,6 +15,10 @@ app.use(
     credentials: true,
   }),
 )
+app.use(
+  `${env.API_PREFIX}/payments/webhooks/razorpay`,
+  express.raw({ type: 'application/json' }),
+)
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(cookieParser())

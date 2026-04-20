@@ -1,4 +1,5 @@
 const { Router } = require('express')
+const automationsRoutes = require('../modules/automations/automations.routes')
 const authRoutes = require('../modules/auth/auth.routes')
 const inboxRoutes = require('../modules/inbox/inbox.routes')
 const leadsRoutes = require('../modules/leads/leads.routes')
@@ -9,6 +10,7 @@ const router = Router()
 
 router.use(healthRoutes)
 router.use('/auth', authRoutes)
+router.use('/automations', automationsRoutes)
 router.use('/inbox', inboxRoutes)
 router.use('/leads', leadsRoutes)
 router.use('/payments', paymentsRoutes)
