@@ -1,6 +1,7 @@
 const { Schema, model, models } = require('mongoose')
 const {
   DEFAULT_PAYMENT_LINK_CURRENCY,
+  DEFAULT_PAYMENT_LINK_PROVIDER,
   DEFAULT_PAYMENT_LINK_STATUS,
   PAYMENT_LINK_STATUSES,
 } = require('./payment-link.constants')
@@ -18,6 +19,23 @@ const paymentLinkSchema = new Schema(
       ref: 'Lead',
       required: true,
       index: true,
+    },
+    provider: {
+      type: String,
+      trim: true,
+      default: DEFAULT_PAYMENT_LINK_PROVIDER,
+      required: true,
+    },
+    providerPaymentLinkId: {
+      type: String,
+      trim: true,
+      default: '',
+      index: true,
+    },
+    providerStatus: {
+      type: String,
+      trim: true,
+      default: '',
     },
     amount: {
       type: Number,

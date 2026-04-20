@@ -35,6 +35,10 @@ const env = {
     process.env.AUTH_COOKIE_MAX_AGE_MS || '604800000',
     'AUTH_COOKIE_MAX_AGE_MS',
   ),
+  RAZORPAY_KEY_ID: process.env.RAZORPAY_KEY_ID || '',
+  RAZORPAY_KEY_SECRET: process.env.RAZORPAY_KEY_SECRET || '',
+  RAZORPAY_API_BASE_URL:
+    process.env.RAZORPAY_API_BASE_URL || 'https://api.razorpay.com/v1',
 }
 
 module.exports = {

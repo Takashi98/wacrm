@@ -34,6 +34,7 @@ Build a simple product that can:
 - `server leads`: modular leads routes with workspace-scoped create, list, and stage update APIs
 - `server inbox`: modular inbox routes with workspace-scoped contact, conversation, message, and create-and-link lead queries
 - `server payments`: modular payment-link routes with workspace-scoped create and list APIs
+- `server razorpay`: real Razorpay payment-link creation with stored provider ids, urls, and statuses
 - `server dev seed`: authenticated development-only inbox seed route for local end-to-end testing
 - `root`: convenience scripts for install, client build, client lint, and server start/dev
 
@@ -63,6 +64,9 @@ Build a simple product that can:
 2. Create local env files:
    - copy `client/.env.example` to `client/.env`
    - copy `server/.env.example` to `server/.env`
+   - add Razorpay server credentials:
+     - `RAZORPAY_KEY_ID`
+     - `RAZORPAY_KEY_SECRET`
 3. Start the frontend with `npm run client:dev`
 4. Start the backend with `npm run server:dev`
 

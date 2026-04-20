@@ -1,9 +1,17 @@
-const PAYMENT_LINK_STATUSES = ['Pending', 'Paid', 'Partial', 'Expired']
+const PAYMENT_LINK_STATUSES = [
+  'Pending',
+  'Paid',
+  'Partial',
+  'Expired',
+  'Cancelled',
+]
 const DEFAULT_PAYMENT_LINK_STATUS = 'Pending'
 const DEFAULT_PAYMENT_LINK_CURRENCY = 'INR'
+const DEFAULT_PAYMENT_LINK_PROVIDER = 'razorpay'
 
 module.exports = {
   DEFAULT_PAYMENT_LINK_CURRENCY,
+  DEFAULT_PAYMENT_LINK_PROVIDER,
   DEFAULT_PAYMENT_LINK_STATUS,
   PAYMENT_LINK_STATUSES,
 }

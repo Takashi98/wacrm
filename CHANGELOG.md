@@ -20,3 +20,4 @@
 - added a development-only inbox seed route for authenticated workspace testing
 - added the inbox-to-lead flow to create and link a new lead from an active conversation
 - added the payment-link foundation with workspace-scoped APIs, stored payment records, and real Payments page data
+- integrated real Razorpay payment-link creation and stored provider ids, urls, and statuses

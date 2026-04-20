@@ -3,6 +3,7 @@ const statusClasses = {
   Pending: 'border-amber-200 bg-amber-50 text-amber-800',
   Partial: 'border-sky-200 bg-sky-50 text-sky-800',
   Expired: 'border-slate-200 bg-slate-100 text-slate-700',
+  Cancelled: 'border-rose-200 bg-rose-50 text-rose-700',
 }
 
 function PaymentRow({ record, mobile = false }) {
@@ -38,6 +39,19 @@ function PaymentRow({ record, mobile = false }) {
             </p>
             <p className="mt-1 text-slate-700">{record.source}</p>
           </div>
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">
+              Link URL
+            </p>
+            <a
+              href={record.linkUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="mt-1 block break-all text-slate-700 underline decoration-slate-300 underline-offset-4"
+            >
+              {record.linkUrl}
+            </a>
+          </div>
         </dl>
 
         <p className="mt-4 text-xs font-medium uppercase tracking-[0.16em] text-slate-400">
@@ -58,6 +72,14 @@ function PaymentRow({ record, mobile = false }) {
 
       <div>
         <p className="text-sm text-slate-700">{record.source}</p>
+        <a
+          href={record.linkUrl}
+          target="_blank"
+          rel="noreferrer"
+          className="mt-2 block break-all text-xs text-slate-500 underline decoration-slate-300 underline-offset-4"
+        >
+          {record.linkUrl}
+        </a>
       </div>
 
       <div>
@@ -82,4 +104,3 @@ function PaymentRow({ record, mobile = false }) {
 }
 
 export default PaymentRow
-
