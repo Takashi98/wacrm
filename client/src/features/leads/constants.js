@@ -36,6 +36,11 @@ export const LEADS_STAGE_COLUMNS = [
   },
 ]
 
+export const LEAD_STAGE_OPTIONS = LEADS_STAGE_COLUMNS.map((column) => ({
+  label: column.label,
+  value: column.stage,
+}))
+
 export function buildLeadsPipelineColumns(leads) {
   return LEADS_STAGE_COLUMNS.map((column) => ({
     ...column,
