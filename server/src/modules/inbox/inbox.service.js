@@ -57,6 +57,7 @@ function buildConversationDetail(conversation, messages) {
   return {
     id: conversation.id,
     assigneeName: conversation.assigneeName || 'Unassigned',
+    hasLinkedLead: Boolean(lead),
     contact: contact ? serializeContact(contact) : null,
     lead: lead ? serializeLead(lead) : null,
     lastMessageAt: conversation.lastMessageAt,
@@ -86,6 +87,15 @@ async function assertWorkspaceScopedLinks(conversation) {
   }
 }
 
+async function findConversationWithLinks({ conversationId, workspaceId }) {
+  return Conversation.findOne({
+    _id: conversationId,
+    workspaceId,
+  })
+    .populate('contactId')
+    .populate('leadId')
+}
+
 async function listConversations({ workspaceId }) {
   const conversations = await Conversation.find({ workspaceId })
     .populate('contactId')
@@ -99,12 +109,10 @@ async function listConversations({ workspaceId }) {
 }
 
 async function getConversationDetail({ conversationId, workspaceId }) {
-  const conversation = await Conversation.findOne({
-    _id: conversationId,
+  const conversation = await findConversationWithLinks({
+    conversationId,
     workspaceId,
   })
-    .populate('contactId')
-    .populate('leadId')
 
   if (!conversation) {
     throw createHttpError(404, 'Conversation not found')
@@ -120,6 +128,37 @@ async function getConversationDetail({ conversationId, workspaceId }) {
   })
 
   return buildConversationDetail(conversation, messages)
+}
+
+async function createLeadFromConversation({ conversationId, workspaceId, input }) {
+  const conversation = await findConversationWithLinks({
+    conversationId,
+    workspaceId,
+  })
+
+  if (!conversation) {
+    throw createHttpError(404, 'Conversation not found')
+  }
+
+  await assertWorkspaceScopedLinks(conversation)
+
+  if (conversation.leadId) {
+    throw createHttpError(409, 'This conversation already has a linked lead')
+  }
+
+  const lead = await Lead.create({
+    ...input,
+    workspaceId,
+  })
+
+  conversation.leadId = lead._id
+  conversation.replyState = 'New lead'
+  await conversation.save()
+
+  return {
+    conversationId: conversation.id,
+    lead: serializeLead(lead),
+  }
 }
 
 function assertDevelopmentOnly() {
@@ -232,6 +271,7 @@ async function seedInboxForWorkspace({ workspaceId, userName }) {
 }
 
 module.exports = {
+  createLeadFromConversation,
   getConversationDetail,
   listConversations,
   seedInboxForWorkspace,

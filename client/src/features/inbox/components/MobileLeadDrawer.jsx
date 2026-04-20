@@ -4,6 +4,8 @@ function MobileLeadDrawer({
   conversation,
   status,
   errorMessage,
+  onCreateLead,
+  isCreateLeadDisabled,
   open,
   onClose,
 }) {
@@ -43,6 +45,8 @@ function MobileLeadDrawer({
           conversation={conversation}
           status={status}
           errorMessage={errorMessage}
+          onCreateLead={onCreateLead}
+          isCreateLeadDisabled={isCreateLeadDisabled}
         />
       </div>
     </div>

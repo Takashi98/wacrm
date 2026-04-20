@@ -9,14 +9,34 @@ const INITIAL_FORM_VALUES = {
   tags: '',
 }
 
+function buildFormValues(initialValues = {}) {
+  return {
+    name: initialValues.name || '',
+    businessName: initialValues.businessName || '',
+    source: initialValues.source || '',
+    value:
+      initialValues.value === 0 || initialValues.value === ''
+        ? ''
+        : initialValues.value
+          ? String(initialValues.value)
+          : '',
+    notes: initialValues.notes || '',
+    tags: Array.isArray(initialValues.tags)
+      ? initialValues.tags.join(', ')
+      : initialValues.tags || '',
+  }
+}
+
 function CreateLeadModal({
   open,
   onClose,
   onSubmit,
   isSubmitting,
   errorMessage,
+  initialValues = INITIAL_FORM_VALUES,
+  description = 'Add a new lead into your pipeline without leaving the board.',
 }) {
-  const [values, setValues] = useState(INITIAL_FORM_VALUES)
+  const [values, setValues] = useState(() => buildFormValues(initialValues))
 
   if (!open) {
     return null
@@ -65,7 +85,7 @@ function CreateLeadModal({
               Create lead
             </p>
             <p className="mt-1 text-sm text-slate-600">
-              Add a new lead into your pipeline without leaving the board.
+              {description}
             </p>
           </div>
           <button

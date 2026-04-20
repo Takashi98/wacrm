@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import {
+  createLeadFromConversationRequest,
   getConversationDetailRequest,
   getInboxConversationsRequest,
 } from '../features/inbox/api'
@@ -8,23 +9,66 @@ import ConversationList from '../features/inbox/components/ConversationList'
 import InboxHeader from '../features/inbox/components/InboxHeader'
 import LeadSidebar from '../features/inbox/components/LeadSidebar'
 import MobileLeadDrawer from '../features/inbox/components/MobileLeadDrawer'
+import CreateLeadModal from '../features/leads/components/CreateLeadModal'
 import {
   buildInboxStats,
   normalizeConversationDetail,
   normalizeConversationSummary,
 } from '../features/inbox/normalize'
 
+async function fetchInboxConversationSummaries() {
+  const data = await getInboxConversationsRequest()
+
+  return data.conversations.map(normalizeConversationSummary)
+}
+
+async function fetchInboxConversationDetail(conversationId) {
+  const data = await getConversationDetailRequest(conversationId)
+
+  return normalizeConversationDetail(data.conversation)
+}
+
+function buildCreateLeadInitialValues(conversation) {
+  if (!conversation) {
+    return {
+      name: '',
+      businessName: '',
+      source: '',
+      value: '',
+      notes: '',
+      tags: '',
+    }
+  }
+
+  return {
+    name: conversation.contact.name || conversation.contactName || '',
+    businessName:
+      conversation.contact.businessName || conversation.businessName || '',
+    source: conversation.contact.source || conversation.source || 'Inbox',
+    value: '',
+    notes: conversation.preview
+      ? `Inbox context: ${conversation.preview}`
+      : '',
+    tags: '',
+  }
+}
+
 function InboxPage() {
   const hasLoadedInboxRef = useRef(false)
   const [conversations, setConversations] = useState([])
   const [status, setStatus] = useState('loading')
   const [errorMessage, setErrorMessage] = useState('')
+  const [interactionErrorMessage, setInteractionErrorMessage] = useState('')
   const [activeConversationId, setActiveConversationId] = useState(null)
   const [activeConversation, setActiveConversation] = useState(null)
   const [activeConversationStatus, setActiveConversationStatus] = useState('idle')
   const [activeConversationErrorMessage, setActiveConversationErrorMessage] =
     useState('')
   const [isLeadDrawerOpen, setIsLeadDrawerOpen] = useState(false)
+  const [isCreateLeadOpen, setIsCreateLeadOpen] = useState(false)
+  const [createLeadModalKey, setCreateLeadModalKey] = useState(0)
+  const [isCreatingLead, setIsCreatingLead] = useState(false)
+  const [createLeadErrorMessage, setCreateLeadErrorMessage] = useState('')
 
   useEffect(() => {
     if (hasLoadedInboxRef.current) {
@@ -35,9 +79,9 @@ function InboxPage() {
 
     async function loadConversations() {
       try {
-        const data = await getInboxConversationsRequest()
+        const nextConversations = await fetchInboxConversationSummaries()
 
-        setConversations(data.conversations.map(normalizeConversationSummary))
+        setConversations(nextConversations)
         setErrorMessage('')
         setStatus('success')
       } catch (error) {
@@ -61,13 +105,15 @@ function InboxPage() {
         setActiveConversationStatus('loading')
         setActiveConversationErrorMessage('')
 
-        const data = await getConversationDetailRequest(activeConversationId)
+        const nextConversation = await fetchInboxConversationDetail(
+          activeConversationId,
+        )
 
         if (isCancelled) {
           return
         }
 
-        setActiveConversation(normalizeConversationDetail(data.conversation))
+        setActiveConversation(nextConversation)
         setActiveConversationStatus('ready')
       } catch (error) {
         if (isCancelled) {
@@ -91,6 +137,9 @@ function InboxPage() {
     setActiveConversation(null)
     setActiveConversationStatus('loading')
     setActiveConversationErrorMessage('')
+    setCreateLeadErrorMessage('')
+    setInteractionErrorMessage('')
+    setIsCreateLeadOpen(false)
     setActiveConversationId(conversationId)
     setIsLeadDrawerOpen(false)
   }
@@ -99,8 +148,59 @@ function InboxPage() {
     setActiveConversation(null)
     setActiveConversationStatus('idle')
     setActiveConversationErrorMessage('')
+    setCreateLeadErrorMessage('')
+    setInteractionErrorMessage('')
+    setIsCreateLeadOpen(false)
     setActiveConversationId(null)
     setIsLeadDrawerOpen(false)
+  }
+
+  function handleOpenCreateLead() {
+    if (!activeConversation || activeConversation.hasLinkedLead) {
+      return
+    }
+
+    setCreateLeadErrorMessage('')
+    setInteractionErrorMessage('')
+    setCreateLeadModalKey((currentValue) => currentValue + 1)
+    setIsCreateLeadOpen(true)
+  }
+
+  async function handleCreateLead(payload) {
+    if (!activeConversationId) {
+      return
+    }
+
+    setCreateLeadErrorMessage('')
+    setInteractionErrorMessage('')
+    setIsCreatingLead(true)
+
+    try {
+      await createLeadFromConversationRequest(activeConversationId, payload)
+      setIsCreateLeadOpen(false)
+
+      try {
+        const [nextConversations, nextConversation] = await Promise.all([
+          fetchInboxConversationSummaries(),
+          fetchInboxConversationDetail(activeConversationId),
+        ])
+
+        setConversations(nextConversations)
+        setActiveConversation(nextConversation)
+        setStatus('success')
+        setErrorMessage('')
+        setActiveConversationStatus('ready')
+        setActiveConversationErrorMessage('')
+      } catch {
+        setInteractionErrorMessage(
+          'Lead was created, but the inbox view could not be refreshed automatically. Refresh the page once.',
+        )
+      }
+    } catch (error) {
+      setCreateLeadErrorMessage(error.message)
+    } finally {
+      setIsCreatingLead(false)
+    }
   }
 
   const inboxStats = buildInboxStats(conversations)
@@ -111,6 +211,12 @@ function InboxPage() {
         <InboxHeader stats={inboxStats} />
 
         <section className="min-h-0 flex-1">
+          {interactionErrorMessage && status === 'success' ? (
+            <div className="mb-3 rounded-[20px] border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700 shadow-sm">
+              {interactionErrorMessage}
+            </div>
+          ) : null}
+
           {status === 'loading' ? (
             <div className="flex h-full min-h-[320px] items-center justify-center rounded-[24px] border border-[color:var(--border)] bg-white px-6 py-10 text-center shadow-sm">
               <div className="max-w-md">
@@ -169,6 +275,8 @@ function InboxPage() {
                     conversation={activeConversation}
                     status={activeConversationStatus}
                     errorMessage={activeConversationErrorMessage}
+                    onCreateLead={handleOpenCreateLead}
+                    isCreateLeadDisabled={isCreatingLead}
                   />
                 </aside>
               </div>
@@ -208,8 +316,21 @@ function InboxPage() {
         conversation={activeConversation}
         status={activeConversationStatus}
         errorMessage={activeConversationErrorMessage}
+        onCreateLead={handleOpenCreateLead}
+        isCreateLeadDisabled={isCreatingLead}
         open={Boolean(activeConversation) && isLeadDrawerOpen}
         onClose={() => setIsLeadDrawerOpen(false)}
+      />
+
+      <CreateLeadModal
+        key={createLeadModalKey}
+        open={isCreateLeadOpen}
+        onClose={() => setIsCreateLeadOpen(false)}
+        onSubmit={handleCreateLead}
+        isSubmitting={isCreatingLead}
+        errorMessage={createLeadErrorMessage}
+        initialValues={buildCreateLeadInitialValues(activeConversation)}
+        description="Convert this conversation into a pipeline lead without leaving the inbox."
       />
     </>
   )

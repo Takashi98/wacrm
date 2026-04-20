@@ -2,6 +2,7 @@ const { Router } = require('express')
 const { env } = require('../../config/env')
 const { requireAuth } = require('../auth/auth.middleware')
 const {
+  createLeadFromConversationHandler,
   getConversationDetailHandler,
   listConversationsHandler,
   seedInboxDevDataHandler,
@@ -16,6 +17,10 @@ if (env.NODE_ENV === 'development') {
 }
 
 router.get('/conversations', listConversationsHandler)
+router.post(
+  '/conversations/:conversationId/lead',
+  createLeadFromConversationHandler,
+)
 router.get('/conversations/:conversationId', getConversationDetailHandler)
 
 module.exports = router

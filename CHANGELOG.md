@@ -18,3 +18,4 @@
 - added the Leads interaction UI with a create-lead modal and simple stage updates against the existing leads API
 - added the first inbox foundation with workspace-scoped inbox APIs and real backend data on the Inbox page
 - added a development-only inbox seed route for authenticated workspace testing
+- added the inbox-to-lead flow to create and link a new lead from an active conversation

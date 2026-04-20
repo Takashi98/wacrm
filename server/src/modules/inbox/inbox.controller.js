@@ -1,9 +1,13 @@
 const {
+  createLeadFromConversation,
   getConversationDetail,
   listConversations,
   seedInboxForWorkspace,
 } = require('./inbox.service')
-const { validateConversationId } = require('./inbox.validation')
+const {
+  validateConversationId,
+  validateCreateLeadFromConversationInput,
+} = require('./inbox.validation')
 
 async function listConversationsHandler(req, res, next) {
   try {
@@ -35,6 +39,22 @@ async function getConversationDetailHandler(req, res, next) {
   }
 }
 
+async function createLeadFromConversationHandler(req, res, next) {
+  try {
+    const conversationId = validateConversationId(req.params.conversationId)
+    const input = validateCreateLeadFromConversationInput(req.body)
+    const result = await createLeadFromConversation({
+      conversationId,
+      workspaceId: req.workspace.id,
+      input,
+    })
+
+    res.status(201).json(result)
+  } catch (error) {
+    next(error)
+  }
+}
+
 async function seedInboxDevDataHandler(req, res, next) {
   try {
     const seedResult = await seedInboxForWorkspace({
@@ -52,6 +72,7 @@ async function seedInboxDevDataHandler(req, res, next) {
 }
 
 module.exports = {
+  createLeadFromConversationHandler,
   getConversationDetailHandler,
   listConversationsHandler,
   seedInboxDevDataHandler,

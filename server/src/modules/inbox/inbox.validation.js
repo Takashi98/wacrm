@@ -1,5 +1,6 @@
 const { isValidObjectId } = require('mongoose')
 const { createHttpError } = require('../../utils/http-error')
+const { validateCreateLeadInput } = require('../leads/leads.validation')
 
 function validateConversationId(conversationId) {
   if (!isValidObjectId(conversationId)) {
@@ -9,6 +10,11 @@ function validateConversationId(conversationId) {
   return conversationId
 }
 
+function validateCreateLeadFromConversationInput(payload = {}) {
+  return validateCreateLeadInput(payload)
+}
+
 module.exports = {
+  validateCreateLeadFromConversationInput,
   validateConversationId,
 }

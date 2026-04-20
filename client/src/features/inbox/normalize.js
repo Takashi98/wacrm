@@ -162,10 +162,12 @@ export function normalizeConversationDetail(conversation) {
 
   return {
     id: conversation.id,
+    hasLinkedLead: conversation.hasLinkedLead || Boolean(lead),
     contactName,
     businessName,
     phone: contact.phone || 'Not added',
     city: contact.city || 'Not set',
+    source: lead?.source || contact.source || '',
     preview: conversation.preview || 'No messages yet in this conversation.',
     lastMessageTime: formatConversationTime(conversation.lastMessageAt),
     unreadCount: conversation.unreadCount || 0,
@@ -173,6 +175,15 @@ export function normalizeConversationDetail(conversation) {
     stage: lead?.stage || 'Contact only',
     assignee: conversation.assigneeName || 'Unassigned',
     initials: getInitials(businessName || contactName || 'WA'),
+    contact: {
+      id: contact.id || '',
+      name: contact.name || '',
+      businessName: contact.businessName || '',
+      phone: contact.phone || '',
+      email: contact.email || '',
+      city: contact.city || '',
+      source: contact.source || '',
+    },
     timelineLabel: conversation.lastMessageAt
       ? formatLastActivity(conversation.lastMessageAt)
       : 'Latest activity',

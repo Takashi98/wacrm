@@ -30,3 +30,10 @@ export function getInboxConversationsRequest() {
 export function getConversationDetailRequest(conversationId) {
   return request(`/inbox/conversations/${conversationId}`)
 }
+
+export function createLeadFromConversationRequest(conversationId, payload) {
+  return request(`/inbox/conversations/${conversationId}/lead`, {
+    method: 'POST',
+    body: payload,
+  })
+}

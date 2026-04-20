@@ -15,7 +15,13 @@ function EmptyInline({ text }) {
   )
 }
 
-function LeadSidebar({ conversation, status = 'idle', errorMessage = '' }) {
+function LeadSidebar({
+  conversation,
+  status = 'idle',
+  errorMessage = '',
+  onCreateLead,
+  isCreateLeadDisabled = false,
+}) {
   if (status === 'loading' && !conversation) {
     return (
       <div className="flex h-full min-h-0 flex-col bg-[color:var(--panel-strong)]">
@@ -96,6 +102,113 @@ function LeadSidebar({ conversation, status = 'idle', errorMessage = '' }) {
   }
 
   const { lead } = conversation
+
+  if (!conversation.hasLinkedLead) {
+    return (
+      <div className="flex h-full min-h-0 flex-col bg-[color:var(--panel-strong)]">
+        <div className="border-b border-[color:var(--border)] bg-white px-4 py-4">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
+            Lead details
+          </p>
+          <p className="mt-2 text-base font-semibold text-slate-950">
+            Contact context
+          </p>
+        </div>
+
+        <div className="min-h-0 flex-1 overflow-y-auto p-4">
+          <div className="space-y-4">
+            <div className="rounded-[28px] border border-slate-200 bg-slate-950 p-5 text-white shadow-sm">
+              <div className="flex items-start gap-3">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white/12 text-sm font-semibold">
+                  {conversation.contactName
+                    .split(' ')
+                    .slice(0, 2)
+                    .map((part) => part[0])
+                    .join('')}
+                </div>
+                <div className="min-w-0">
+                  <p className="truncate text-lg font-semibold">
+                    {conversation.contactName}
+                  </p>
+                  <p className="mt-1 text-sm text-slate-300">
+                    {conversation.businessName}
+                  </p>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    <span className="rounded-full bg-amber-400/15 px-2.5 py-1 text-xs font-medium text-amber-200">
+                      Contact only
+                    </span>
+                    <span className="rounded-full bg-white/10 px-2.5 py-1 text-xs font-medium text-slate-200">
+                      Owner: {conversation.assignee}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <Section title="Create lead">
+              <p className="text-sm leading-6 text-[color:var(--muted)]">
+                This conversation is not in the pipeline yet. Create a lead to
+                track stage, notes, and next steps from the inbox.
+              </p>
+              <button
+                type="button"
+                onClick={onCreateLead}
+                disabled={isCreateLeadDisabled}
+                className="mt-4 inline-flex w-full items-center justify-center rounded-full bg-slate-950 px-5 py-3 text-sm font-medium text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-300"
+              >
+                Create lead
+              </button>
+            </Section>
+
+            <Section title="Contact summary">
+              <dl className="space-y-3 text-sm">
+                <div className="flex items-start justify-between gap-4">
+                  <dt className="text-slate-500">Phone</dt>
+                  <dd className="text-right font-medium text-slate-900">
+                    {conversation.phone}
+                  </dd>
+                </div>
+                <div className="flex items-start justify-between gap-4">
+                  <dt className="text-slate-500">Email</dt>
+                  <dd className="text-right font-medium text-slate-900">
+                    {conversation.contact.email || 'Not added'}
+                  </dd>
+                </div>
+                <div className="flex items-start justify-between gap-4">
+                  <dt className="text-slate-500">Source</dt>
+                  <dd className="text-right font-medium text-slate-900">
+                    {conversation.contact.source || 'Not set'}
+                  </dd>
+                </div>
+                <div className="flex items-start justify-between gap-4">
+                  <dt className="text-slate-500">City</dt>
+                  <dd className="text-right font-medium text-slate-900">
+                    {conversation.city}
+                  </dd>
+                </div>
+                <div className="flex items-start justify-between gap-4">
+                  <dt className="text-slate-500">Last activity</dt>
+                  <dd className="text-right font-medium text-slate-900">
+                    {lead.lastActivity}
+                  </dd>
+                </div>
+              </dl>
+            </Section>
+
+            <Section title="Latest message">
+              {conversation.preview ? (
+                <div className="rounded-2xl bg-[color:var(--panel-soft)] px-4 py-4 text-sm leading-6 text-slate-700">
+                  {conversation.preview}
+                </div>
+              ) : (
+                <EmptyInline text="No message preview is available for this conversation yet." />
+              )}
+            </Section>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="flex h-full min-h-0 flex-col bg-[color:var(--panel-strong)]">
