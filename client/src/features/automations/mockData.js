@@ -1,12 +1,12 @@
 export const automationTemplates = [
   {
-    id: 'tpl-reply',
-    title: 'No reply reminder',
-    description: 'One simple follow-up if the customer stops responding.',
+    id: 'tpl-new-lead-followup',
+    title: 'New lead follow-up',
+    description: 'Mark follow-up due immediately when a new lead is created.',
   },
   {
-    id: 'tpl-owner',
-    title: 'Owner notification',
-    description: 'Alert the assigned owner when a lead becomes urgent.',
+    id: 'tpl-sales-intake',
+    title: 'Sales intake rule',
+    description: 'Keep new inquiries visible for operators right after capture.',
   },
 ]

@@ -25,7 +25,7 @@ Build a simple product that can:
 - `client`: React + Vite + JavaScript with Tailwind CSS and React Router
 - `client auth`: login, signup, protected routes, and cookie-based session hydration
 - `client workspace`: auth state includes the current workspace and shows it in the app shell
-- `client leads`: the Leads page now loads real workspace-scoped pipeline data and supports create + stage update interactions
+- `client leads`: the Leads page now loads real workspace-scoped pipeline data, supports create + stage update interactions, and shows follow-up due state when automation sets it
 - `client inbox`: the Inbox page now loads real workspace-scoped conversations, active chat detail, and create-lead flow from the sidebar
 - `client automations`: the Automations page now loads real workspace-scoped rules and supports create + active/inactive toggle interactions
 - `client payments`: the Payments page now loads real workspace-scoped payment links and supports creating links for leads
@@ -35,6 +35,7 @@ Build a simple product that can:
 - `server leads`: modular leads routes with workspace-scoped create, list, and stage update APIs
 - `server inbox`: modular inbox routes with workspace-scoped contact, conversation, message, and create-and-link lead queries
 - `server automations`: modular automation-rule routes with workspace-scoped list, create, and status update APIs
+- `server automation execution`: first real execution path for `lead_created -> mark_followup_due`, with lead follow-up updates, `lastRunAt`, and stored automation run records
 - `server payments`: modular payment-link routes with workspace-scoped create and list APIs
 - `server razorpay`: real Razorpay payment-link creation with stored provider ids, urls, and statuses
 - `server dev seed`: authenticated development-only inbox seed route for local end-to-end testing

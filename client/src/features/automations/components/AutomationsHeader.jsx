@@ -25,7 +25,7 @@ function AutomationsHeader({ stats }) {
             Operations workspace
           </h1>
           <p className="mt-1 text-sm text-[color:var(--muted)]">
-            Simple workspace rules for follow-ups and owner alerts.
+            First real rule path: mark follow-up due when a lead is created.
           </p>
         </div>
 

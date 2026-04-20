@@ -1,8 +1,12 @@
 const { isValidObjectId } = require('mongoose')
 const { createHttpError } = require('../../utils/http-error')
 const {
+  AUTOMATION_ACTION_TYPES,
   AUTOMATION_STATUSES,
+  AUTOMATION_TRIGGER_TYPES,
+  DEFAULT_AUTOMATION_ACTION_TYPE,
   DEFAULT_AUTOMATION_STATUS,
+  DEFAULT_AUTOMATION_TRIGGER_TYPE,
 } = require('./automation.constants')
 
 function normalizeText(value) {
@@ -22,15 +26,50 @@ function validateStatus(status) {
   return normalizedStatus
 }
 
+function validateExecutionType({
+  fieldName,
+  supportedValues,
+  value,
+  defaultValue,
+}) {
+  if (typeof value === 'undefined') {
+    return defaultValue
+  }
+
+  const normalizedValue = normalizeText(value)
+
+  if (!supportedValues.includes(normalizedValue)) {
+    throw createHttpError(
+      400,
+      `${fieldName} must be one of: ${supportedValues.join(', ')}`,
+    )
+  }
+
+  return normalizedValue
+}
+
 function validateCreateAutomationInput(payload = {}) {
   const name = normalizeText(payload.name)
-  const trigger = normalizeText(payload.trigger)
-  const action = normalizeText(payload.action)
+  const trigger = normalizeText(payload.trigger) || 'When a lead is created'
+  const action =
+    normalizeText(payload.action) || 'Mark follow-up as due immediately'
   const scope = normalizeText(payload.scope) || 'General'
   const status =
     typeof payload.status === 'undefined'
       ? DEFAULT_AUTOMATION_STATUS
       : validateStatus(payload.status)
+  const triggerType = validateExecutionType({
+    fieldName: 'Trigger type',
+    supportedValues: AUTOMATION_TRIGGER_TYPES,
+    value: payload.triggerType,
+    defaultValue: DEFAULT_AUTOMATION_TRIGGER_TYPE,
+  })
+  const actionType = validateExecutionType({
+    fieldName: 'Action type',
+    supportedValues: AUTOMATION_ACTION_TYPES,
+    value: payload.actionType,
+    defaultValue: DEFAULT_AUTOMATION_ACTION_TYPE,
+  })
 
   if (name.length < 2) {
     throw createHttpError(
@@ -55,10 +94,12 @@ function validateCreateAutomationInput(payload = {}) {
 
   return {
     action,
+    actionType,
     name,
     scope,
     status,
     trigger,
+    triggerType,
   }
 }
 

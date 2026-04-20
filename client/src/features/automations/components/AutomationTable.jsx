@@ -33,7 +33,7 @@ function AutomationTable({
             <span>Status</span>
             <span>Trigger</span>
             <span>Action</span>
-            <span>Last event</span>
+            <span>Last run</span>
           </div>
 
           <div className="hidden min-h-0 flex-1 overflow-y-auto xl:block">
@@ -66,8 +66,7 @@ function AutomationTable({
               No automation rules yet
             </p>
             <p className="mt-2 text-sm leading-6 text-[color:var(--muted)]">
-              Create your first simple follow-up or owner notification rule for
-              this workspace.
+              Create your first lead-created follow-up rule for this workspace.
             </p>
           </div>
         </div>

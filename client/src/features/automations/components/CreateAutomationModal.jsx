@@ -3,8 +3,10 @@ import { useState } from 'react'
 const INITIAL_FORM_VALUES = {
   name: '',
   scope: '',
-  trigger: '',
-  action: '',
+  trigger: 'When a lead is created',
+  triggerType: 'lead_created',
+  action: 'Mark follow-up as due immediately',
+  actionType: 'mark_followup_due',
   status: 'active',
 }
 
@@ -12,8 +14,10 @@ function buildFormValues(initialValues = {}) {
   return {
     name: initialValues.name || '',
     scope: initialValues.scope || '',
-    trigger: initialValues.trigger || '',
-    action: initialValues.action || '',
+    trigger: initialValues.trigger || 'When a lead is created',
+    triggerType: initialValues.triggerType || 'lead_created',
+    action: initialValues.action || 'Mark follow-up as due immediately',
+    actionType: initialValues.actionType || 'mark_followup_due',
     status: initialValues.status || 'active',
   }
 }
@@ -47,8 +51,10 @@ function CreateAutomationModal({
     onSubmit({
       name: values.name.trim(),
       scope: values.scope.trim(),
-      trigger: values.trigger.trim(),
-      action: values.action.trim(),
+      trigger: values.trigger,
+      triggerType: values.triggerType,
+      action: values.action,
+      actionType: values.actionType,
       status: values.status,
     })
   }
@@ -71,7 +77,8 @@ function CreateAutomationModal({
               Create automation
             </p>
             <p className="mt-1 text-sm text-slate-600">
-              Add one clear follow-up or owner alert rule for this workspace.
+              The first real automation path marks follow-up as due when a lead
+              is created.
             </p>
           </div>
           <button
@@ -99,7 +106,7 @@ function CreateAutomationModal({
                   name="name"
                   value={values.name}
                   onChange={handleChange}
-                  placeholder="Follow up after no reply"
+                  placeholder="Mark follow-up due for new leads"
                   disabled={isSubmitting}
                   required
                 />
@@ -114,7 +121,7 @@ function CreateAutomationModal({
                   name="scope"
                   value={values.scope}
                   onChange={handleChange}
-                  placeholder="Inbox follow-up"
+                  placeholder="Lead follow-up"
                   disabled={isSubmitting}
                 />
               </label>
@@ -124,12 +131,11 @@ function CreateAutomationModal({
                   Trigger
                 </span>
                 <textarea
-                  className="min-h-24 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-emerald-400"
+                  className="min-h-24 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none"
                   name="trigger"
                   value={values.trigger}
-                  onChange={handleChange}
-                  placeholder="If a lead does not reply within 6 hours."
-                  disabled={isSubmitting}
+                  readOnly
+                  disabled
                   required
                 />
               </label>
@@ -139,12 +145,11 @@ function CreateAutomationModal({
                   Action
                 </span>
                 <textarea
-                  className="min-h-28 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-emerald-400"
+                  className="min-h-28 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none"
                   name="action"
                   value={values.action}
-                  onChange={handleChange}
-                  placeholder="Send one follow-up and notify the owner."
-                  disabled={isSubmitting}
+                  readOnly
+                  disabled
                   required
                 />
               </label>

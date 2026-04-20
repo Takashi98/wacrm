@@ -1,4 +1,5 @@
 const { createHttpError } = require('../../utils/http-error')
+const { runLeadCreatedAutomations } = require('../automations/automation-execution.service')
 const Lead = require('./leads.model')
 
 function serializeLead(lead) {
@@ -11,6 +12,7 @@ function serializeLead(lead) {
     stage: lead.stage,
     tags: lead.tags,
     value: lead.value,
+    followUpDueAt: lead.followUpDueAt,
     createdAt: lead.createdAt,
     updatedAt: lead.updatedAt,
   }
@@ -20,6 +22,9 @@ async function createLead({ input, workspaceId }) {
   const lead = await Lead.create({
     ...input,
     workspaceId,
+  })
+  await runLeadCreatedAutomations({
+    lead,
   })
 
   return serializeLead(lead)
@@ -58,5 +63,6 @@ async function updateLeadStage({ leadId, stage, workspaceId }) {
 module.exports = {
   createLead,
   listLeads,
+  serializeLead,
   updateLeadStage,
 }

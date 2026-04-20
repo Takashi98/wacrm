@@ -48,6 +48,10 @@ const leadSchema = new Schema(
       type: [String],
       default: [],
     },
+    followUpDueAt: {
+      type: Date,
+      default: null,
+    },
   },
   {
     timestamps: true,

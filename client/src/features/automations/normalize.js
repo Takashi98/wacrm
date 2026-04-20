@@ -22,31 +22,31 @@ function isYesterday(value, now) {
 
 function formatAutomationTimestamp(dateInput) {
   if (!dateInput) {
-    return 'Updated recently'
+    return 'Not run yet'
   }
 
   const value = new Date(dateInput)
 
   if (Number.isNaN(value.getTime())) {
-    return 'Updated recently'
+    return 'Not run yet'
   }
 
   const now = new Date()
 
   if (isSameDay(value, now)) {
-    return `Updated today, ${formatClock(value)}`
+    return `Ran today, ${formatClock(value)}`
   }
 
   if (isYesterday(value, now)) {
-    return 'Updated yesterday'
+    return 'Ran yesterday'
   }
 
-  return new Intl.DateTimeFormat('en-IN', {
+  return `Ran ${new Intl.DateTimeFormat('en-IN', {
     day: 'numeric',
     month: 'short',
     hour: 'numeric',
     minute: '2-digit',
-  }).format(value)
+  }).format(value)}`
 }
 
 export function normalizeAutomationRule(rule) {
@@ -57,7 +57,7 @@ export function normalizeAutomationRule(rule) {
     action: rule.action,
     scope: rule.scope || 'General',
     status: rule.status || 'inactive',
-    lastEvent: formatAutomationTimestamp(rule.updatedAt || rule.createdAt),
+    lastEvent: formatAutomationTimestamp(rule.lastRunAt),
   }
 }
 

@@ -13,7 +13,7 @@ function AutomationSidebar({
           Start a simple automation
         </h2>
         <p className="mt-2 text-sm leading-6 text-[color:var(--muted)]">
-          Keep the first version focused on clear follow-ups and owner alerts.
+          Keep the first version focused on new lead follow-up visibility.
         </p>
         <button
           type="button"

@@ -39,6 +39,17 @@ function LeadCard({
         </div>
       </dl>
 
+      {lead.followUpDueText ? (
+        <div className="mt-4 rounded-2xl border border-amber-200 bg-amber-50 px-3 py-3">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-amber-700">
+            Follow-up due
+          </p>
+          <p className="mt-1 text-sm font-medium text-amber-950">
+            {lead.followUpDueText}
+          </p>
+        </div>
+      ) : null}
+
       <div className="mt-4 rounded-2xl bg-[color:var(--panel-soft)] px-3 py-3 text-sm leading-6 text-slate-600">
         {lead.note}
       </div>

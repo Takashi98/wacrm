@@ -20,6 +20,50 @@ function formatLeadValue(value) {
   }).format(value || 0)}`
 }
 
+function formatClock(value) {
+  return new Intl.DateTimeFormat('en-IN', {
+    hour: 'numeric',
+    minute: '2-digit',
+  }).format(value)
+}
+
+function isSameDay(a, b) {
+  return (
+    a.getFullYear() === b.getFullYear() &&
+    a.getMonth() === b.getMonth() &&
+    a.getDate() === b.getDate()
+  )
+}
+
+function formatFollowUpDue(dateInput) {
+  if (!dateInput) {
+    return ''
+  }
+
+  const value = new Date(dateInput)
+
+  if (Number.isNaN(value.getTime())) {
+    return ''
+  }
+
+  const now = new Date()
+
+  if (Math.abs(now.getTime() - value.getTime()) < 5 * 60 * 1000) {
+    return 'Due now'
+  }
+
+  if (isSameDay(value, now)) {
+    return `Due today, ${formatClock(value)}`
+  }
+
+  return `Due ${new Intl.DateTimeFormat('en-IN', {
+    day: 'numeric',
+    month: 'short',
+    hour: 'numeric',
+    minute: '2-digit',
+  }).format(value)}`
+}
+
 function normalizeLead(lead) {
   return {
     id: lead.id,
@@ -31,6 +75,7 @@ function normalizeLead(lead) {
     note: lead.notes || 'No notes added for this lead yet.',
     stage: lead.stage,
     tag: lead.tags?.[0] || '',
+    followUpDueText: formatFollowUpDue(lead.followUpDueAt),
   }
 }
 

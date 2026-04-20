@@ -23,3 +23,4 @@
 - integrated real Razorpay payment-link creation and stored provider ids, urls, and statuses
 - added Razorpay webhook signature verification and payment-link status sync into stored payment records
 - added the automations foundation with workspace-scoped APIs and real Automations page create and active/inactive toggle flows
+- added the first real automation execution path so active lead-created rules mark follow-up due, update `lastRunAt`, and store automation run records

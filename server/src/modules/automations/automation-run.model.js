@@ -1,14 +1,14 @@
 const { Schema, model, models } = require('mongoose')
 const {
   AUTOMATION_ACTION_TYPES,
-  AUTOMATION_STATUSES,
+  AUTOMATION_RUN_STATUSES,
   AUTOMATION_TRIGGER_TYPES,
   DEFAULT_AUTOMATION_ACTION_TYPE,
-  DEFAULT_AUTOMATION_STATUS,
+  DEFAULT_AUTOMATION_RUN_STATUS,
   DEFAULT_AUTOMATION_TRIGGER_TYPE,
 } = require('./automation.constants')
 
-const automationRuleSchema = new Schema(
+const automationRunSchema = new Schema(
   {
     workspaceId: {
       type: Schema.Types.ObjectId,
@@ -16,26 +16,22 @@ const automationRuleSchema = new Schema(
       required: true,
       index: true,
     },
-    name: {
-      type: String,
-      trim: true,
+    automationId: {
+      type: Schema.Types.ObjectId,
+      ref: 'AutomationRule',
       required: true,
+      index: true,
     },
-    trigger: {
-      type: String,
-      trim: true,
+    leadId: {
+      type: Schema.Types.ObjectId,
+      ref: 'Lead',
       required: true,
+      index: true,
     },
     triggerType: {
       type: String,
       enum: AUTOMATION_TRIGGER_TYPES,
       default: DEFAULT_AUTOMATION_TRIGGER_TYPE,
-      required: true,
-      index: true,
-    },
-    action: {
-      type: String,
-      trim: true,
       required: true,
     },
     actionType: {
@@ -43,21 +39,15 @@ const automationRuleSchema = new Schema(
       enum: AUTOMATION_ACTION_TYPES,
       default: DEFAULT_AUTOMATION_ACTION_TYPE,
       required: true,
-      index: true,
-    },
-    scope: {
-      type: String,
-      trim: true,
-      default: 'General',
     },
     status: {
       type: String,
-      enum: AUTOMATION_STATUSES,
-      default: DEFAULT_AUTOMATION_STATUS,
+      enum: AUTOMATION_RUN_STATUSES,
+      default: DEFAULT_AUTOMATION_RUN_STATUS,
       required: true,
       index: true,
     },
-    lastRunAt: {
+    followUpDueAt: {
       type: Date,
       default: null,
     },
@@ -68,4 +58,4 @@ const automationRuleSchema = new Schema(
 )
 
 module.exports =
-  models.AutomationRule || model('AutomationRule', automationRuleSchema)
+  models.AutomationRun || model('AutomationRun', automationRunSchema)

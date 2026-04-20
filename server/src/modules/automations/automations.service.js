@@ -1,14 +1,21 @@
 const { createHttpError } = require('../../utils/http-error')
 const AutomationRule = require('./automation-rule.model')
+const {
+  DEFAULT_AUTOMATION_ACTION_TYPE,
+  DEFAULT_AUTOMATION_TRIGGER_TYPE,
+} = require('./automation.constants')
 
 function serializeAutomationRule(rule) {
   return {
     id: rule.id,
     name: rule.name,
     trigger: rule.trigger,
+    triggerType: rule.triggerType || DEFAULT_AUTOMATION_TRIGGER_TYPE,
     action: rule.action,
+    actionType: rule.actionType || DEFAULT_AUTOMATION_ACTION_TYPE,
     scope: rule.scope,
     status: rule.status,
+    lastRunAt: rule.lastRunAt,
     createdAt: rule.createdAt,
     updatedAt: rule.updatedAt,
   }

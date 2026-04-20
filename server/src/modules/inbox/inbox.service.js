@@ -1,5 +1,6 @@
 const { createHttpError } = require('../../utils/http-error')
 const { env } = require('../../config/env')
+const { runLeadCreatedAutomations } = require('../automations/automation-execution.service')
 const { serializeLead } = require('../leads/leads.service')
 const Lead = require('../leads/leads.model')
 const { findLatestPaymentLinkForLead } = require('../payments/payments.service')
@@ -157,6 +158,9 @@ async function createLeadFromConversation({ conversationId, workspaceId, input }
   const lead = await Lead.create({
     ...input,
     workspaceId,
+  })
+  await runLeadCreatedAutomations({
+    lead,
   })
 
   conversation.leadId = lead._id
