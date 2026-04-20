@@ -15,7 +15,59 @@ function EmptyInline({ text }) {
   )
 }
 
-function LeadSidebar({ conversation }) {
+function LeadSidebar({ conversation, status = 'idle', errorMessage = '' }) {
+  if (status === 'loading' && !conversation) {
+    return (
+      <div className="flex h-full min-h-0 flex-col bg-[color:var(--panel-strong)]">
+        <div className="border-b border-[color:var(--border)] bg-white px-4 py-4">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
+            Lead details
+          </p>
+          <p className="mt-2 text-base font-semibold text-slate-950">
+            Contact context
+          </p>
+        </div>
+
+        <div className="flex flex-1 items-center justify-center p-5">
+          <div className="max-w-xs text-center">
+            <p className="text-sm font-semibold text-slate-900">
+              Loading contact details
+            </p>
+            <p className="mt-2 text-sm leading-6 text-[color:var(--muted)]">
+              WACRM is loading contact and lead context for the selected chat.
+            </p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (status === 'error' && !conversation) {
+    return (
+      <div className="flex h-full min-h-0 flex-col bg-[color:var(--panel-strong)]">
+        <div className="border-b border-[color:var(--border)] bg-white px-4 py-4">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
+            Lead details
+          </p>
+          <p className="mt-2 text-base font-semibold text-slate-950">
+            Contact context
+          </p>
+        </div>
+
+        <div className="flex flex-1 items-center justify-center p-5">
+          <div className="max-w-xs text-center">
+            <p className="text-sm font-semibold text-slate-900">
+              Could not load contact context
+            </p>
+            <p className="mt-2 text-sm leading-6 text-[color:var(--muted)]">
+              {errorMessage || 'The selected conversation details are not available.'}
+            </p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   if (!conversation) {
     return (
       <div className="flex h-full min-h-0 flex-col bg-[color:var(--panel-strong)]">

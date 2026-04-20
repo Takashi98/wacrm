@@ -2,14 +2,69 @@ const messageBubbleClasses = {
   contact:
     'mr-auto rounded-[22px] rounded-bl-md bg-white text-slate-900 shadow-sm',
   user: 'ml-auto rounded-[22px] rounded-br-md bg-emerald-700 text-white shadow-sm',
+  system: 'mx-auto rounded-full bg-slate-900 text-white shadow-sm',
 }
 
 function ChatPanel({
   conversation,
+  status = 'idle',
+  errorMessage = '',
   onBack,
   onOpenLead,
   onSelectFirstConversation,
 }) {
+  if (status === 'loading' && !conversation) {
+    return (
+      <div className="flex h-full min-h-0 flex-col bg-white">
+        <div className="border-b border-[color:var(--border)] bg-[color:var(--panel-strong)] px-5 py-4">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
+            Active chat
+          </p>
+          <p className="mt-2 text-base font-semibold text-slate-950">
+            Message timeline
+          </p>
+        </div>
+
+        <div className="flex flex-1 items-center justify-center bg-[color:var(--panel-soft)] p-6">
+          <div className="max-w-md rounded-[28px] border border-slate-200 bg-white p-8 text-center shadow-sm">
+            <p className="text-sm font-semibold text-slate-900">
+              Loading conversation
+            </p>
+            <p className="mt-2 text-sm leading-6 text-[color:var(--muted)]">
+              WACRM is loading messages and contact context for this chat.
+            </p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (status === 'error' && !conversation) {
+    return (
+      <div className="flex h-full min-h-0 flex-col bg-white">
+        <div className="border-b border-[color:var(--border)] bg-[color:var(--panel-strong)] px-5 py-4">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
+            Active chat
+          </p>
+          <p className="mt-2 text-base font-semibold text-slate-950">
+            Message timeline
+          </p>
+        </div>
+
+        <div className="flex flex-1 items-center justify-center bg-[color:var(--panel-soft)] p-6">
+          <div className="max-w-md rounded-[28px] border border-rose-200 bg-white p-8 text-center shadow-sm">
+            <p className="text-sm font-semibold text-slate-900">
+              Could not open conversation
+            </p>
+            <p className="mt-2 text-sm leading-6 text-[color:var(--muted)]">
+              {errorMessage || 'The selected conversation could not be loaded.'}
+            </p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   if (!conversation) {
     return (
       <div className="flex h-full min-h-0 flex-col bg-white">
@@ -101,7 +156,7 @@ function ChatPanel({
         <div className="mx-auto w-full max-w-3xl">
           <div className="mb-5 flex justify-center">
             <span className="rounded-full bg-white px-3 py-1 text-xs font-medium text-slate-500 shadow-sm">
-              Today
+              {conversation.timelineLabel || 'Latest activity'}
             </span>
           </div>
 
@@ -119,6 +174,8 @@ function ChatPanel({
                     className={`mt-2 text-xs ${
                       message.sender === 'user'
                         ? 'text-emerald-100'
+                        : message.sender === 'system'
+                          ? 'text-slate-300'
                         : 'text-slate-400'
                     }`}
                   >

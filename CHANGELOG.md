@@ -16,3 +16,5 @@
 - added the first workspace foundation with workspace creation on signup, user linkage, and workspace-aware auth state
 - added the first leads foundation with workspace-scoped lead APIs and real backend data on the Leads page
 - added the Leads interaction UI with a create-lead modal and simple stage updates against the existing leads API
+- added the first inbox foundation with workspace-scoped inbox APIs and real backend data on the Inbox page
+- added a development-only inbox seed route for authenticated workspace testing

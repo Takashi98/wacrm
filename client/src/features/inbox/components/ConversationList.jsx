@@ -21,7 +21,8 @@ function ConversationList({ conversations, activeConversationId, onSelect }) {
               No conversations yet
             </p>
             <p className="mt-2 text-sm leading-6 text-[color:var(--muted)]">
-              New chats will appear here once inbox sync is connected.
+              Conversations will appear here once this workspace has contact
+              and conversation records.
             </p>
           </div>
         </div>

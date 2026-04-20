@@ -26,10 +26,13 @@ Build a simple product that can:
 - `client auth`: login, signup, protected routes, and cookie-based session hydration
 - `client workspace`: auth state includes the current workspace and shows it in the app shell
 - `client leads`: the Leads page now loads real workspace-scoped pipeline data and supports create + stage update interactions
+- `client inbox`: the Inbox page now loads real workspace-scoped conversations and active chat detail from the backend
 - `server`: Express + JavaScript with versioned base API routing and environment loading
 - `server auth`: modular auth routes for signup, login, current user, and logout
 - `server workspace`: workspace creation during signup and user-to-workspace linking
 - `server leads`: modular leads routes with workspace-scoped create, list, and stage update APIs
+- `server inbox`: modular inbox routes with workspace-scoped contact, conversation, and message queries
+- `server dev seed`: authenticated development-only inbox seed route for local end-to-end testing
 - `root`: convenience scripts for install, client build, client lint, and server start/dev
 
 ## Repo structure
@@ -76,7 +79,15 @@ Build a simple product that can:
 - Backend root: `http://localhost:5000`
 - Base API health route: `http://localhost:5000/api/v1/health`
 - Base API auth route: `http://localhost:5000/api/v1/auth/me`
+- Base API inbox route: `http://localhost:5000/api/v1/inbox/conversations`
+- Dev-only inbox seed route: `POST http://localhost:5000/api/v1/inbox/dev/seed`
 - Base API leads route: `http://localhost:5000/api/v1/leads`
+
+## Local inbox testing
+1. Start the backend in development mode with `npm run server:dev`
+2. Sign up or log in so the auth cookie is set for your current workspace
+3. Trigger `POST /api/v1/inbox/dev/seed`
+4. Open `/inbox` to verify the seeded conversation, timeline, and right sidebar context
 
 ## Tech stack
 - Frontend: React + Vite + Tailwind CSS

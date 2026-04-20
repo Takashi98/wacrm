@@ -25,7 +25,7 @@ function InboxHeader({ stats }) {
             Operator workspace
           </h1>
           <p className="mt-1 text-sm text-[color:var(--muted)]">
-            Mock inbox shell only
+            Workspace-scoped conversation data from your backend
           </p>
         </div>
 

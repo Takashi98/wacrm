@@ -1,6 +1,12 @@
 import LeadSidebar from './LeadSidebar'
 
-function MobileLeadDrawer({ conversation, open, onClose }) {
+function MobileLeadDrawer({
+  conversation,
+  status,
+  errorMessage,
+  open,
+  onClose,
+}) {
   if (!open) {
     return null
   }
@@ -33,7 +39,11 @@ function MobileLeadDrawer({ conversation, open, onClose }) {
           </button>
         </div>
 
-        <LeadSidebar conversation={conversation} />
+        <LeadSidebar
+          conversation={conversation}
+          status={status}
+          errorMessage={errorMessage}
+        />
       </div>
     </div>
   )
